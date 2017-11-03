@@ -1,5 +1,7 @@
-sudo: false
+sudo: required
 language: cpp
+services:
+  - docker
 compiler:
   - gcc
 install:
