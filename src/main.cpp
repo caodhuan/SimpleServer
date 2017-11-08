@@ -4,8 +4,9 @@
 #include <string.h>
 
 using namespace std;
-int main() {
-	cout << "test" << endl;
+
+void TestMysql() {
+	cout << "test mysql" << endl;
 	MYSQL* mysql = mysql_init(NULL);
 
 	if (mysql_real_connect(mysql, "127.0.0.1", "x", "x", "x", 3306, NULL, 0)) {
@@ -13,7 +14,7 @@ int main() {
 		{
 
 			char cmd[] = "select * from tbl_accounts";
-			int nResult = mysql_real_query(mysql, cmd, strlen(cmd) );
+			int nResult = mysql_real_query(mysql, cmd, strlen(cmd));
 			if (nResult == 0)
 			{
 				MYSQL_RES* res = mysql_store_result(mysql);
@@ -25,5 +26,16 @@ int main() {
 			}
 		}
 	}
+
+}
+
+void TestLibuv() {
+
+}
+
+int main() {
+	TestMysql();
+
+	TestLibuv();
 
 }
