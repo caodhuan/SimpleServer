@@ -11,7 +11,7 @@ add_executable(MySQLTest ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
 
 if(WIN32)
 	set(lib_path ${CMAKE_CURRENT_SOURCE_DIR}/3rd/mysql/win)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zi /Od /Oy- /MTd ")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zi /Od /Oy- /MT ")
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Zi /Od /Oy- /MTd")	
 	file(GLOB mysqlclient_lib ${lib_path}/lib/mysqlclient.lib)
 else()
@@ -28,6 +28,13 @@ endif()
 include_directories(${lib_path}/include)
 
 
-target_link_libraries(MySQLTest ${mysqlclient_lib})
-
 add_subdirectory(3rd)
+
+
+
+include_directories(
+	3rd/libuv/include
+	3rd/libuv/src)
+
+target_link_libraries(MySQLTest ${mysqlclient_lib} libuv)
+target_link_libraries(MySQLTest ws2_32.lib Psapi.lib IPHLPAPI.lib userenv.lib)

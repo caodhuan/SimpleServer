@@ -1,6 +1,10 @@
-#include <iostream>
+extern "C" {
+#include "uv.h"
+}
 
 #include "mysql.h"
+
+#include <iostream>
 #include <string.h>
 
 using namespace std;
@@ -29,8 +33,30 @@ void TestMysql() {
 
 }
 
-void TestLibuv() {
+static uv_timer_t timer_handle;
 
+static void timer_cb(uv_timer_t* handle) {
+	std::cout << "test" << std::endl;
+	uv_stop(handle->loop);
+}
+
+void TestLibuv() {
+	int r;
+	uv_loop_t loop;
+
+	uv_loop_init(&loop);
+
+	uv_timer_init(&loop, &timer_handle);
+	uv_timer_start(&timer_handle, timer_cb, 100, 100);
+
+	uv_loop_close(&loop);
+
+	uv_run(&loop, UV_RUN_DEFAULT);
+
+	uv_close((uv_handle_t*)&timer_handle, NULL);
+	r = uv_run(&loop, UV_RUN_DEFAULT);
+
+	uv_loop_close(&loop);
 }
 
 int main() {

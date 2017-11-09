@@ -78,7 +78,8 @@ file(GLOB libuvsrc
 		)
 source_group(src FILES ${libuvsrc} )
 
+add_library(libuv STATIC ${libuvsrc} ${libuvinclude} ${platform})
+
 include_directories(
 	${libuv_dir}/src
 	${libuv_dir}/include)
-add_library(libuv STATIC ${libuvsrc} ${libuvinclude} ${platform})
