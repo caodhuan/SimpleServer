@@ -13,7 +13,12 @@ if(WIN32)
 	set(lib_path ${CMAKE_CURRENT_SOURCE_DIR}/3rd/mysql/win)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zi /Od /Oy- /MT ")
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Zi /Od /Oy- /MTd")	
-	file(GLOB mysqlclient_lib ${lib_path}/lib/mysqlclient.lib)
+	set(mysqlclient_lib 
+		optimized ${lib_path}/lib/mysqlclient.lib
+		debug ${lib_path}/lib/libmysql.lib)
+
+	file(COPY ${lib_path}/lib/libmysql.dll DESTINATION ${CMAKE_WORKING_DIRECTORY}/)
+	file(COPY ${lib_path}/lib/libmysql.dll DESTINATION ${PROJECT_BINARY_DIR}/Debug)
 else()
 	set(lib_path ${CMAKE_CURRENT_SOURCE_DIR}/3rd/mysql/linux)
 
