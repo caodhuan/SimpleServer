@@ -9,9 +9,11 @@ project(CHServer)
 
 add_executable(MySQLTest ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
 
+add_subdirectory(3rd)
+
 if(WIN32)
 	set(lib_path ${CMAKE_CURRENT_SOURCE_DIR}/3rd/mysql/win)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zi /Od /Oy- /MT ")
+	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi /Od /Oy- /MT ")
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Zi /Od /Oy- /MTd")	
 	set(mysqlclient_lib 
 		optimized ${lib_path}/lib/mysqlclient.lib
@@ -19,6 +21,10 @@ if(WIN32)
 
 	file(COPY ${lib_path}/lib/libmysql.dll DESTINATION ${CMAKE_WORKING_DIRECTORY}/)
 	file(COPY ${lib_path}/lib/libmysql.dll DESTINATION ${PROJECT_BINARY_DIR}/Debug)
+
+	target_link_libraries(MySQLTest ${mysqlclient_lib} libuv)
+	target_link_libraries(MySQLTest ws2_32.lib Psapi.lib IPHLPAPI.lib userenv.lib)
+
 else()
 	set(lib_path ${CMAKE_CURRENT_SOURCE_DIR}/3rd/mysql/linux)
 
@@ -27,19 +33,10 @@ else()
     if(NOT mysqlclient_lib)
 		file(GLOB mysqlclient_lib ${lib_path}/lib/libmysqlclient.a)
     endif()
-	target_link_libraries(MySQLTest pthread dl)
+	target_link_libraries(MySQLTest ${mysqlclient_lib} libuv pthread dl )
 endif()
 
 include_directories(${lib_path}/include)
-
-
-add_subdirectory(3rd)
-
-
-
 include_directories(
 	3rd/libuv/include
 	3rd/libuv/src)
-
-target_link_libraries(MySQLTest ${mysqlclient_lib} libuv)
-target_link_libraries(MySQLTest ws2_32.lib Psapi.lib IPHLPAPI.lib userenv.lib)
