@@ -1,9 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-add_definitions(-DUNICODE -D_UNICODE)
-
-# 可以使用文件夹
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+include(cmake/macros.cmake)
 
 project(CHServer)
 
@@ -40,3 +37,10 @@ include_directories(${lib_path}/include)
 include_directories(
 	3rd/libuv/include
 	3rd/libuv/src)
+
+
+group(base)
+	addlib(netowrk ${CMAKE_CURRENT_SOURCE_DIR}/src/network)
+	addlib(db ${CMAKE_CURRENT_SOURCE_DIR}/src/db)
+	addlib(common ${CMAKE_CURRENT_SOURCE_DIR}/src/common)
+endgroup()

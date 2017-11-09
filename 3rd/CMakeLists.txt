@@ -93,6 +93,7 @@ file(GLOB libuvsrc
 source_group(src FILES ${libuvsrc} )
 
 add_library(libuv STATIC ${libuvsrc} ${libuvinclude} ${platform})
+set_target_properties(libuv PROPERTIES FOLDER 3rd)
 
 include_directories(
 	${libuv_dir}/src
