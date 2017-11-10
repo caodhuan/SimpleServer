@@ -5,75 +5,143 @@ namespace CHServer {
 
 
 	SocketBase::SocketBase(EventDispatcher* dispatcher)
-		: m_receiveIndex(0)
-		, m_sendIndex(0)
-		, m_sigNum(0)
+		: m_receiveStartIndex(0)
+		, m_receiveIndex(0)
+		, m_sendBufferHead(&m_sendBuffer[0])
+		, m_sendBuffIndex(0)
+		, m_sendingBufferHead(&m_sendBuffer[1])
 		, m_dispatcher(dispatcher)
-		, m_handler(NULL)
-		, m_callback{NULL}
-	{
+		, m_callback{ NULL } {
+	}
+
+	SocketBase::~SocketBase() {
 
 	}
 
-	SocketBase::~SocketBase()
-	{
-
-	}
-
-	void SocketBase::SetCallback(SocketCallback connected, SocketCallback received)
-	{
+	void SocketBase::SetCallback(SocketCallback connected, SocketCallback received) {
 		m_callback[CONNECTED] = connected;
 		m_callback[RECEIVED] = received;
 	}
 
-	void SocketBase::Close()
-	{
-		uv_close(m_handler, NULL);
-		m_handler = NULL;
+	bool SocketBase::IsClose() {
+		return GetHandle() == NULL;
 	}
 
-	bool SocketBase::IsClose()
-	{
-		return m_handler == NULL;
+	void SocketBase::Close() {
+
 	}
 
-	void SocketBase::OnNewConnection(uv_stream_t* handle, int status)
-	{
-		SocketBase* socket = (SocketBase*)handle->data;
-		socket->m_callback[RECEIVED]();
-	}
+	void SocketBase::Send(char* data, int32_t len) {
+		AppendSendData(data, len);
 
-	void SocketBase::Allocator(uv_handle_t* handle, size_t suggestedSize, uv_buf_t* buf)
-	{
-		SocketBase* socket = (SocketBase*)handle->data;
-		uint32_t remainSize = (uint32_t)socket->m_ReceiveBuffer.size() - socket->m_receiveIndex;
-		if (remainSize < suggestedSize)
-		{
-			socket->m_ReceiveBuffer.resize(suggestedSize - remainSize);
+		if (m_writer.data) {
+			// 已经在发送了，下一次再发
+			return;
 		}
-		buf->base = &socket->m_ReceiveBuffer[socket->m_receiveIndex];
+		uv_buf_t bufs;
+		static const int count = 1;
+		std::swap(m_sendBufferHead, m_sendingBufferHead);
+
+		bufs = uv_buf_init((char*)m_sendingBufferHead, m_sendBuffIndex);
+
+		m_sendBuffIndex = 0;
+
+		uv_write(&m_writer, (uv_stream_t*)GetHandle(), &bufs, count, SocketBase::OnSent);
+
 	}
 
-	void SocketBase::OnReceived(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf)
-	{
+	int32_t SocketBase::GetBuffLength() {
+		if (m_receiveIndex >= m_receiveStartIndex) {
+			return m_receiveIndex - m_receiveStartIndex;
+		}
+
+		return (int32_t)m_receiveBuffer.size() - m_receiveStartIndex + m_receiveIndex;
+	}
+
+	int32_t SocketBase::ReadBuff(char*& data) {
+		if (m_receiveIndex == m_receiveStartIndex) {
+			return 0;
+		}
+
+		data = &m_receiveBuffer[m_receiveStartIndex];
+
+		if (m_receiveStartIndex < m_receiveIndex) {
+			return m_receiveIndex - m_receiveStartIndex;
+		} else {
+			return (int32_t)m_receiveBuffer.size() - m_receiveStartIndex;
+		}
+	}
+
+	void SocketBase::RemoveBuff(int32_t len) {
+		if (m_receiveStartIndex == m_receiveIndex) {
+			return;
+		}
+
+		if (m_receiveStartIndex + len > m_receiveBuffer.size()) {
+			fprintf(stderr, "不允许直接移除两段\n");
+			return;
+		}
+
+		m_receiveStartIndex += len;
+		if (m_receiveStartIndex == m_receiveBuffer.size()) {
+			m_receiveStartIndex = 0;
+		}
+	}
+
+	void SocketBase::AppendSendData(char* data, int32_t len) {
+		std::vector<char> buffer = *m_sendBufferHead;
+		if (buffer.size() - m_sendBuffIndex < len) {
+			buffer.resize(len - (buffer.size() - m_sendBuffIndex)); //  CTODO:考虑内存对齐
+		}
+		memcpy(&buffer[m_sendBuffIndex], data, len);
+		m_sendBuffIndex += len;
+	}
+
+	void SocketBase::OnNewConnection(uv_stream_t* handle, int status) {
 		SocketBase* socket = (SocketBase*)handle->data;
 		socket->m_callback[RECEIVED]();
 	}
 
-	void SocketBase::OnSent(uv_write_t* handle, int status)
-	{
+	void SocketBase::Allocator(uv_handle_t* handle, size_t suggestedSize, uv_buf_t* buf) {
+		SocketBase* socket = (SocketBase*)handle->data;
+		uint32_t remainSize = (uint32_t)socket->m_receiveBuffer.size() - socket->m_receiveIndex;
+		if (remainSize == 0) {
+			if (socket->m_receiveStartIndex >= suggestedSize) {
+				buf->base = &socket->m_receiveBuffer[0];
+				return;
+			} else {
+				socket->m_receiveBuffer.resize(suggestedSize);
+				buf->base = &socket->m_receiveBuffer[socket->m_receiveIndex];
+				return;
+			}
+
+		}
+		buf->base = &socket->m_receiveBuffer[socket->m_receiveIndex];
+	}
+
+	void SocketBase::OnReceived(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) {
+		SocketBase* socket = (SocketBase*)handle->data;
+		socket->m_receiveIndex += nread;
+		if (socket->m_receiveIndex > (int32_t)socket->m_receiveBuffer.size())
+		{
+			socket->m_receiveIndex = (int32_t)socket->m_receiveBuffer.size();
+		}
+		socket->m_callback[RECEIVED]();
+	}
+
+	void SocketBase::OnSent(uv_write_t* handle, int status) {
 		SocketBase* socket = (SocketBase*)handle->data;
 
 	}
 
-	void SocketBase::OnConnected(uv_connect_t* handle, int status)
-	{
+	void SocketBase::OnConnected(uv_connect_t* handle, int status) {
 		SocketBase* socket = (SocketBase*)handle->data;
 		socket->m_callback[CONNECTED]();
+
+		uv_read_start(handle->handle, SocketBase::Allocator, SocketBase::OnReceived);
 	}
 
-	void SocketBase::OnClose(uv_handle_t* handle)
-	{
+	void SocketBase::OnClose(uv_handle_t* handle) {
 		SocketBase* socket = (SocketBase*)handle->data;
 		socket->Close();
 	}

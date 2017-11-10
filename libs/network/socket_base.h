@@ -5,64 +5,76 @@
 #include <vector>
 #include <functional>
 #include <stdint.h>
-namespace CHServer{
+namespace CHServer {
 	class ScoketBase;
 	class EventDispatcher;
 
 	typedef std::function<void(void)> SocketCallback;
 
-// socket基类，封装通用的socekt操作
-class SocketBase {
-public:
-	SocketBase(EventDispatcher* dispatcher);
-	virtual ~SocketBase();
+	// socket基类，封装通用的socekt操作
+	class SocketBase {
+	public:
+		SocketBase(EventDispatcher* dispatcher);
+		virtual ~SocketBase();
 
-public:
-	virtual bool InitSocket() = 0;
+	public:
+		virtual bool InitSocket() = 0;
+		virtual uv_handle_t* GetHandle() = 0;
+		virtual void Close() = 0;
 
-public:
-	void SetCallback(SocketCallback connected, 
-					 SocketCallback received);
+	public:
+		void SetCallback(SocketCallback connected,
+			SocketCallback received);
+		bool IsClose();
 
-	int32_t GetSignal() {
-		return m_sigNum;
-	}
+		void Send(char* data, int32_t len);
 
-	void Close();
 
-	bool IsClose();
-private:
+		int32_t GetBuffLength();
 
-	static void OnNewConnection(uv_stream_t* handle, int status);
+		// read之后, buff依然存在，当确定不需要，调用RemoveBuff
+		// 如果返回的读取字节数小于 GetBuffLength，那么RemoveBuff之后在读一次即可
+		int32_t ReadBuff(char*& data);
+		void RemoveBuff(int32_t len);
 
-	static void Allocator(uv_handle_t* handle, size_t suggestedSize, uv_buf_t* buf);
+	private:
+		void AppendSendData(char* data, int32_t len);
+		
+	protected:
 
-	static void OnReceived(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf);
+		static void OnNewConnection(uv_stream_t* handle, int status);
 
-	static void OnSent(uv_write_t* handle, int status);
+		static void Allocator(uv_handle_t* handle, size_t suggestedSize, uv_buf_t* buf);
 
-	static void OnConnected(uv_connect_t* handle, int status);
+		static void OnReceived(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf);
 
-	static void OnClose(uv_handle_t* handle);
-	
-private:
-	enum {
-		CONNECTED = 0,
-		RECEIVED = 1,
-		MAX = 2,
+		static void OnSent(uv_write_t* handle, int status);
+
+		static void OnConnected(uv_connect_t* handle, int status);
+
+		static void OnClose(uv_handle_t* handle);
+
+	protected:
+		enum {
+			CONNECTED = 0,
+			RECEIVED = 1,
+			MAX = 2,
+		};
+		static const int32_t SendBuffSize = 2;
+		std::vector<char> m_receiveBuffer;
+		int32_t m_receiveStartIndex;
+		int32_t m_receiveIndex;
+
+		std::vector<char> m_sendBuffer[SendBuffSize];
+		std::vector<char>* m_sendBufferHead;
+		int32_t m_sendBuffIndex;
+		std::vector<char>* m_sendingBufferHead;
+
+		SocketCallback m_callback[MAX];
+
+		EventDispatcher* m_dispatcher;
+
+		uv_write_t m_writer;
 	};
-	std::vector<char> m_ReceiveBuffer;
-	uint32_t m_receiveIndex;
-	std::vector<char> m_SendBUffer;
-	uint32_t m_sendIndex;
-	
-	int32_t m_sigNum;
-
-	uv_handle_t* m_handler;
-
-	EventDispatcher* m_dispatcher;
-
-	SocketCallback m_callback[MAX];
-};
 
 }
