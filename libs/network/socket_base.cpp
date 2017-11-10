@@ -1,6 +1,8 @@
 #include "socket_base.h"
 #include "event_dispatcher.h"
 
+#include<cstring>
+
 namespace CHServer {
 
 
@@ -10,8 +12,10 @@ namespace CHServer {
 		, m_sendBufferHead(&m_sendBuffer[0])
 		, m_sendBuffIndex(0)
 		, m_sendingBufferHead(&m_sendBuffer[1])
-		, m_dispatcher(dispatcher)
-		, m_callback{ NULL } {
+		, m_dispatcher(dispatcher) {
+		for (int i = 0; i < SocketBase::MAX; i++) {
+			m_callback[i] = NULL;
+		}
 	}
 
 	SocketBase::~SocketBase() {

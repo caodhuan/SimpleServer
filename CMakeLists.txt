@@ -8,9 +8,11 @@ add_executable(MySQLTest ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
 
 add_subdirectory(3rd)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -std=c++11")
+
 if(WIN32)
 	set(lib_path ${CMAKE_CURRENT_SOURCE_DIR}/3rd/mysql/win)
-	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi /Od /Oy- /MT ")
+	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi /Od /Oy- /MD ") #mysqlclient只能是MD  ？
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Zi /Od /Oy- /MTd")	
 	set(mysqlclient_lib 
 		optimized ${lib_path}/lib/mysqlclient.lib
