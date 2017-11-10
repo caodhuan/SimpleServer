@@ -40,7 +40,7 @@ include_directories(
 
 
 group(base)
-	addlib(netowrk ${CMAKE_CURRENT_SOURCE_DIR}/src/network)
-	addlib(db ${CMAKE_CURRENT_SOURCE_DIR}/src/db)
-	addlib(common ${CMAKE_CURRENT_SOURCE_DIR}/src/common)
+	addlib(netowrk ${CMAKE_CURRENT_SOURCE_DIR}/libs/network)
+	addlib(db ${CMAKE_CURRENT_SOURCE_DIR}/libs/db)
+	addlib(common ${CMAKE_CURRENT_SOURCE_DIR}/libs/common)
 endgroup()
