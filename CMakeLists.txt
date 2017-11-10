@@ -4,7 +4,7 @@ include(cmake/macros.cmake)
 
 project(CHServer)
 
-add_executable(MySQLTest ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
+add_executable(MyTest ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
 
 add_subdirectory(3rd)
 
@@ -21,8 +21,8 @@ if(WIN32)
 	file(COPY ${lib_path}/lib/libmysql.dll DESTINATION ${CMAKE_WORKING_DIRECTORY}/)
 	file(COPY ${lib_path}/lib/libmysql.dll DESTINATION ${PROJECT_BINARY_DIR}/Debug)
 
-	target_link_libraries(MySQLTest ${mysqlclient_lib} libuv)
-	target_link_libraries(MySQLTest ws2_32.lib Psapi.lib IPHLPAPI.lib userenv.lib)
+	target_link_libraries(MyTest ${mysqlclient_lib} libuv)
+	target_link_libraries(MyTest ws2_32.lib Psapi.lib IPHLPAPI.lib userenv.lib)
 
 else()
 	set(lib_path ${CMAKE_CURRENT_SOURCE_DIR}/3rd/mysql/linux)
@@ -32,7 +32,7 @@ else()
     if(NOT mysqlclient_lib)
 		file(GLOB mysqlclient_lib ${lib_path}/lib/libmysqlclient.a)
     endif()
-	target_link_libraries(MySQLTest ${mysqlclient_lib} libuv pthread dl )
+	target_link_libraries(MyTest ${mysqlclient_lib} libuv pthread dl )
 endif()
 
 include_directories(${lib_path}/include)
@@ -46,3 +46,5 @@ group(base)
 	addlib(db ${CMAKE_CURRENT_SOURCE_DIR}/libs/db)
 	addlib(common ${CMAKE_CURRENT_SOURCE_DIR}/libs/common)
 endgroup()
+
+target_link_libraries(MyTest netowrk db common ) 

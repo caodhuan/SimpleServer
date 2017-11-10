@@ -2,6 +2,7 @@
 #include "event_dispatcher.h"
 
 #include<cstring>
+#include <iostream>
 
 namespace CHServer {
 
@@ -16,6 +17,8 @@ namespace CHServer {
 		for (int i = 0; i < SocketBase::MAX; i++) {
 			m_callback[i] = NULL;
 		}
+
+		m_writer.data = this;
 	}
 
 	SocketBase::~SocketBase() {
@@ -31,22 +34,21 @@ namespace CHServer {
 		return GetHandle() == NULL;
 	}
 
-	void SocketBase::Close() {
-
-	}
-
 	void SocketBase::Send(char* data, int32_t len) {
 		AppendSendData(data, len);
-
-		if (m_writer.data) {
+		if (!uv_is_writable((uv_stream_t*)GetHandle())) {
 			// 已经在发送了，下一次再发
 			return;
 		}
+		if (m_sendBuffIndex == 0) {
+			return;
+		}
+
 		uv_buf_t bufs;
 		static const int count = 1;
 		std::swap(m_sendBufferHead, m_sendingBufferHead);
 
-		bufs = uv_buf_init((char*)m_sendingBufferHead, m_sendBuffIndex);
+		bufs = uv_buf_init(&(*m_sendingBufferHead)[0], m_sendBuffIndex);
 
 		m_sendBuffIndex = 0;
 
@@ -93,9 +95,12 @@ namespace CHServer {
 	}
 
 	void SocketBase::AppendSendData(char* data, int32_t len) {
-		std::vector<char> buffer = *m_sendBufferHead;
+		if (!data || len == 0) {
+			return;
+		}
+		std::vector<char>& buffer = *m_sendBufferHead;
 		if (buffer.size() - m_sendBuffIndex < len) {
-			buffer.resize(len - (buffer.size() - m_sendBuffIndex)); //  CTODO:考虑内存对齐
+			buffer.resize(len + m_sendBuffIndex); //  CTODO:考虑内存对齐
 		}
 		memcpy(&buffer[m_sendBuffIndex], data, len);
 		m_sendBuffIndex += len;
@@ -112,36 +117,43 @@ namespace CHServer {
 		if (remainSize == 0) {
 			if (socket->m_receiveStartIndex >= suggestedSize) {
 				buf->base = &socket->m_receiveBuffer[0];
+				buf->len = socket->m_receiveStartIndex;
 				return;
 			} else {
 				socket->m_receiveBuffer.resize(suggestedSize);
-				buf->base = &socket->m_receiveBuffer[socket->m_receiveIndex];
-				return;
 			}
-
 		}
 		buf->base = &socket->m_receiveBuffer[socket->m_receiveIndex];
+		buf->len = suggestedSize - socket->m_receiveIndex;
 	}
 
 	void SocketBase::OnReceived(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) {
+		if (nread < 0) {
+			std::cout << uv_strerror(nread);
+		}
 		SocketBase* socket = (SocketBase*)handle->data;
-		socket->m_receiveIndex += nread;
-		if (socket->m_receiveIndex > (int32_t)socket->m_receiveBuffer.size())
-		{
+		socket->m_receiveIndex += (int32_t)nread;
+		if (socket->m_receiveIndex > (int32_t)socket->m_receiveBuffer.size()) {
 			socket->m_receiveIndex = (int32_t)socket->m_receiveBuffer.size();
 		}
-		socket->m_callback[RECEIVED]();
+
+		if (socket->m_callback[RECEIVED]) {
+			socket->m_callback[RECEIVED]();
+		}
+
 	}
 
 	void SocketBase::OnSent(uv_write_t* handle, int status) {
 		SocketBase* socket = (SocketBase*)handle->data;
+		socket->Send(NULL, 0);
 
 	}
 
 	void SocketBase::OnConnected(uv_connect_t* handle, int status) {
 		SocketBase* socket = (SocketBase*)handle->data;
-		socket->m_callback[CONNECTED]();
-
+		if (socket->m_callback[CONNECTED]) {
+			socket->m_callback[CONNECTED]();
+		}
 		uv_read_start(handle->handle, SocketBase::Allocator, SocketBase::OnReceived);
 	}
 

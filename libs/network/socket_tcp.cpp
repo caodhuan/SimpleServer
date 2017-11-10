@@ -26,6 +26,7 @@ namespace CHServer {
 		}
 
 		m_handle = new uv_tcp_t();
+		m_handle->data = this;
 		uv_tcp_init(m_dispatcher->GetLoop(), m_handle);
 		return true;
 	}
@@ -46,6 +47,8 @@ namespace CHServer {
 			return;
 		}
 		m_connector = new uv_connect_t();
+		m_connector->data = this;
+
 		sockaddr_in addr;
 		uv_ip4_addr(ip.c_str(), port, &addr);
 
