@@ -27,11 +27,6 @@ macro(addexec name path)
 endmacro()
 
 
-
-
-
-
-
 macro(add2group proj)
 	if(NOT ${project_group} STREQUAL "")
 		set_target_properties(${proj} PROPERTIES FOLDER ${project_group})

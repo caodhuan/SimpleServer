@@ -94,6 +94,9 @@ source_group(src FILES ${libuvsrc} )
 
 add_library(libuv STATIC ${libuvsrc} ${libuvinclude} ${platform})
 set_target_properties(libuv PROPERTIES FOLDER 3rd)
+if(NOT WIN32)
+	target_link_libraries(libuv pthread)
+endif()
 
 include_directories(
 	${libuv_dir}/src

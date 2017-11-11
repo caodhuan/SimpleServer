@@ -30,9 +30,11 @@ else()
 
   	find_library(mysqlclient_lib mysqlclient)
     if(NOT mysqlclient_lib)
+    	message(STATUS "mysqlclient NOT found")
 		file(GLOB mysqlclient_lib ${lib_path}/lib/libmysqlclient.a)
     endif()
 	target_link_libraries(MyTest ${mysqlclient_lib} libuv pthread dl )
+	
 endif()
 
 include_directories(${lib_path}/include)
@@ -42,9 +44,11 @@ include_directories(
 
 
 group(base)
-	addlib(netowrk ${CMAKE_CURRENT_SOURCE_DIR}/libs/network)
+	addlib(network ${CMAKE_CURRENT_SOURCE_DIR}/libs/network)
 	addlib(db ${CMAKE_CURRENT_SOURCE_DIR}/libs/db)
 	addlib(common ${CMAKE_CURRENT_SOURCE_DIR}/libs/common)
 endgroup()
 
-target_link_libraries(MyTest netowrk db common ) 
+target_link_libraries(MyTest network db common ) 
+
+target_link_libraries(network libuv common) 

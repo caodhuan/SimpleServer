@@ -52,9 +52,9 @@ void TestLibuv() {
 		int len = client->GetBuffLength();
 		char* ptr = NULL;
 
-		if (!readOnce && len> 1024) {
+		if (!readOnce && len> 1025) {
 			readOnce = true;
-			client->RemoveBuff(1024);
+			client->RemoveBuff(1025);
 		}
 		//int readLen = client->ReadBuff(ptr);
 // 

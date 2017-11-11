@@ -8,9 +8,7 @@ namespace CHServer {
 
 
 	SocketBase::SocketBase(EventDispatcher* dispatcher)
-		: m_receiveStartIndex(0)
-		, m_receiveIndex(0)
-		, m_sendBufferHead(&m_sendBuffer[0])
+		: m_sendBufferHead(&m_sendBuffer[0])
 		, m_sendBuffIndex(0)
 		, m_sendingBufferHead(&m_sendBuffer[1])
 		, m_dispatcher(dispatcher)
@@ -20,6 +18,7 @@ namespace CHServer {
 		}
 
 		m_writer.data = this;
+		m_receiveBuffer = new Buffer();
 	}
 
 	SocketBase::~SocketBase() {
@@ -60,46 +59,17 @@ namespace CHServer {
 	}
 
 	int32_t SocketBase::GetBuffLength() {
-		if (m_receiveIndex >= m_receiveStartIndex) {
-			return m_receiveIndex - m_receiveStartIndex;
-		}
-
-		return (int32_t)m_receiveBuffer.size() - m_receiveStartIndex + m_receiveIndex;
+		return m_receiveBuffer->GetDataLength();
 	}
 
 	int32_t SocketBase::ReadBuff(char*& data) {
-		if (m_receiveIndex == m_receiveStartIndex) {
-			return 0;
-		}
+		data = m_receiveBuffer->GetDataPoint();
 
-		data = &m_receiveBuffer[m_receiveStartIndex];
-
-		if (m_receiveStartIndex < m_receiveIndex) {
-			return m_receiveIndex - m_receiveStartIndex;
-		} else {
-			return (int32_t)m_receiveBuffer.size() - m_receiveStartIndex;
-		}
+		return m_receiveBuffer->GetContinuesDatalength();
 	}
 
 	void SocketBase::RemoveBuff(int32_t len) {
-		if (m_receiveStartIndex == m_receiveIndex) {
-			return;
-		}
-
-		if (m_receiveStartIndex + len > m_receiveBuffer.size()) {
-			fprintf(stderr, "不允许直接移除两段\n");
-			return;
-		}
-
-		m_receiveStartIndex += len;
-
-		if (m_receiveStartIndex == m_receiveIndex) {
-			m_receiveStartIndex = 0;
-			m_receiveIndex = 0;
-		}
-		if (m_receiveStartIndex == m_receiveBuffer.size()) {
-			m_receiveStartIndex = 0;
-		}
+		m_receiveBuffer->FreeData(len);
 	}
 
 	void SocketBase::AppendSendData(const char* data, int32_t len) {
@@ -120,31 +90,17 @@ namespace CHServer {
 	}
 
 	void SocketBase::Allocator(uv_handle_t* handle, size_t suggestedSize, uv_buf_t* buf) {
+		// 由于suggestedSize 总是65536
+		static const int SIZE = 1024;
+
 		SocketBase* socket = (SocketBase*)handle->data;
-		int32_t remainSpace = 0;
-		if (socket->m_receiveStartIndex > socket->m_receiveIndex) {
-			remainSpace = socket->m_receiveStartIndex - socket->m_receiveIndex;
-
-			buf->base = &socket->m_receiveBuffer[socket->m_receiveIndex];
-			buf->len = remainSpace;
-
-		} else {
-			remainSpace = (uint32_t)socket->m_receiveBuffer.size() - socket->m_receiveIndex;
-			if (remainSpace == 0) {
-				if (socket->m_receiveStartIndex > 0) {
-					buf->base = &socket->m_receiveBuffer[0];
-					buf->len = socket->m_receiveStartIndex;
-					socket->m_receiveIndex = 0;
-				} else {
-					socket->m_receiveBuffer.resize(suggestedSize + socket->m_receiveBuffer.size());
-					buf->base = &socket->m_receiveBuffer[socket->m_receiveIndex];
-					buf->len = (uint32_t)socket->m_receiveBuffer.size() - socket->m_receiveIndex;
-				}
-			} else {
-				buf->base = &socket->m_receiveBuffer[socket->m_receiveIndex];
-				buf->len = remainSpace;
-			}
+		
+		if (socket->m_receiveBuffer->GetFreeLength() < SIZE) {
+			socket->m_receiveBuffer->AdjustLength(SIZE);
 		}
+
+		buf->base = socket->m_receiveBuffer->GetFreePoint();
+		buf->len = socket->m_receiveBuffer->GetFreeLength();
 	}
 
 	void SocketBase::OnReceived(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) {
@@ -152,16 +108,7 @@ namespace CHServer {
 			std::cout << uv_strerror(nread);
 		}
 		SocketBase* socket = (SocketBase*)handle->data;
-		socket->m_receiveIndex += (int32_t)nread;
-		if (socket->m_receiveIndex == (int32_t)socket->m_receiveBuffer.size()) {
-			// 开始饶圈
-			if (socket->m_receiveStartIndex > 0) {
-				socket->m_receiveIndex = 0;
-			}
-
-		} else if (socket->m_receiveIndex > (int32_t)socket->m_receiveBuffer.size()) {
-			socket->m_receiveIndex = (int32_t)socket->m_receiveBuffer.size();
-		}
+		socket->m_receiveBuffer->FillData(nread);
 
 		if (socket->m_callback[RECEIVED]) {
 			socket->m_callback[RECEIVED]();

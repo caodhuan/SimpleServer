@@ -5,6 +5,9 @@
 #include <vector>
 #include <functional>
 #include <stdint.h>
+
+#include "buffer.h"
+
 namespace CHServer {
 	class ScoketBase;
 	class EventDispatcher;
@@ -61,9 +64,8 @@ namespace CHServer {
 			MAX = 2,
 		};
 		static const int32_t SendBuffCount = 2;
-		std::vector<char> m_receiveBuffer;
-		int32_t m_receiveStartIndex;
-		int32_t m_receiveIndex;
+		
+		Buffer* m_receiveBuffer;
 
 		std::vector<char> m_sendBuffer[SendBuffCount];
 		std::vector<char>* m_sendBufferHead;
