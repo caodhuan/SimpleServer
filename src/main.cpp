@@ -39,17 +39,37 @@ void TestMysql() {
 void TestLibuv() {
 	EventDispatcher* dispatcher = new EventDispatcher();
 	SocketTCP* client = new SocketTCP(dispatcher);
+	bool readOnce = false;
 	client->InitSocket();
-	client->SetCallback([=] {
-		char msg[] = "12312312";
+	char msg[] = "12312312";
+	std::string str;
+	str.assign(msg);
+
+	client->SetCallback([&] {
+		
 		client->Send(msg, sizeof(msg));
-	}, [=] ()-> void {
+	}, [&] ()-> void {
 		int len = client->GetBuffLength();
 		char* ptr = NULL;
-		int readLen = client->ReadBuff(ptr);
-		std::string str;
-		str.assign(ptr, readLen);
-		std::cout << str.c_str();
+
+		if (!readOnce && len> 1024) {
+			readOnce = true;
+			client->RemoveBuff(1024);
+		}
+		//int readLen = client->ReadBuff(ptr);
+// 
+// 		std::string str;
+// 		str.assign(ptr, readLen);
+// 
+// 		if (readLen < len) {
+// 			client->RemoveBuff(readLen);
+// 			readLen = client->ReadBuff(ptr);
+// 			str.append(ptr, readLen);
+// 		}
+// 		client->RemoveBuff(readLen);
+		
+		//std::cout << str.c_str();
+		client->Send(str.c_str(), str.size());
 	});
 
 	client->Connect("127.0.0.1", 2356);

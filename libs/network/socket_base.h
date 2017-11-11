@@ -27,7 +27,7 @@ namespace CHServer {
 			SocketCallback received);
 		bool IsClose();
 
-		void Send(char* data, int32_t len);
+		void Send(const char* data, int32_t len);
 
 
 		int32_t GetBuffLength();
@@ -38,7 +38,7 @@ namespace CHServer {
 		void RemoveBuff(int32_t len);
 
 	private:
-		void AppendSendData(char* data, int32_t len);
+		void AppendSendData(const char* data, int32_t len);
 		
 	protected:
 

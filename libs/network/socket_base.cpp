@@ -34,10 +34,10 @@ namespace CHServer {
 		return GetHandle() == NULL;
 	}
 
-	void SocketBase::Send(char* data, int32_t len) {
+	void SocketBase::Send(const char* data, int32_t len) {
 		AppendSendData(data, len);
 		if (!uv_is_writable((uv_stream_t*)GetHandle())) {
-			// ÒÑ¾­ÔÚ·¢ËÍÁË£¬ÏÂÒ»´ÎÔÙ·¢
+			// å·²ç»åœ¨å‘é€äº†ï¼Œä¸‹ä¸€æ¬¡å†å‘
 			return;
 		}
 		if (m_sendBuffIndex == 0) {
@@ -84,23 +84,28 @@ namespace CHServer {
 		}
 
 		if (m_receiveStartIndex + len > m_receiveBuffer.size()) {
-			fprintf(stderr, "²»ÔÊĞíÖ±½ÓÒÆ³ıÁ½¶Î\n");
+			fprintf(stderr, "ä¸å…è®¸ç›´æ¥ç§»é™¤ä¸¤æ®µ\n");
 			return;
 		}
 
 		m_receiveStartIndex += len;
+
+		if (m_receiveStartIndex == m_receiveIndex) {
+			m_receiveStartIndex = 0;
+			m_receiveIndex = 0;
+		}
 		if (m_receiveStartIndex == m_receiveBuffer.size()) {
 			m_receiveStartIndex = 0;
 		}
 	}
 
-	void SocketBase::AppendSendData(char* data, int32_t len) {
+	void SocketBase::AppendSendData(const char* data, int32_t len) {
 		if (!data || len == 0) {
 			return;
 		}
 		std::vector<char>& buffer = *m_sendBufferHead;
 		if (buffer.size() - m_sendBuffIndex < len) {
-			buffer.resize(len + m_sendBuffIndex); //  CTODO:¿¼ÂÇÄÚ´æ¶ÔÆë
+			buffer.resize(len + m_sendBuffIndex); //  CTODO:è€ƒè™‘å†…å­˜å¯¹é½
 		}
 		memcpy(&buffer[m_sendBuffIndex], data, len);
 		m_sendBuffIndex += len;
@@ -112,6 +117,7 @@ namespace CHServer {
 	}
 
 	void SocketBase::Allocator(uv_handle_t* handle, size_t suggestedSize, uv_buf_t* buf) {
+		suggestedSize = 1024;
 		SocketBase* socket = (SocketBase*)handle->data;
 		uint32_t remainSize = (uint32_t)socket->m_receiveBuffer.size() - socket->m_receiveIndex;
 		if (remainSize == 0) {
@@ -120,7 +126,7 @@ namespace CHServer {
 				buf->len = socket->m_receiveStartIndex;
 				return;
 			} else {
-				socket->m_receiveBuffer.resize(suggestedSize);
+				socket->m_receiveBuffer.resize(suggestedSize + socket->m_receiveBuffer.size());
 			}
 		}
 		buf->base = &socket->m_receiveBuffer[socket->m_receiveIndex];
