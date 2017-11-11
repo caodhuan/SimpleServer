@@ -60,12 +60,12 @@ namespace CHServer {
 			RECEIVED = 1,
 			MAX = 2,
 		};
-		static const int32_t SendBuffSize = 2;
+		static const int32_t SendBuffCount = 2;
 		std::vector<char> m_receiveBuffer;
 		int32_t m_receiveStartIndex;
 		int32_t m_receiveIndex;
 
-		std::vector<char> m_sendBuffer[SendBuffSize];
+		std::vector<char> m_sendBuffer[SendBuffCount];
 		std::vector<char>* m_sendBufferHead;
 		int32_t m_sendBuffIndex;
 		std::vector<char>* m_sendingBufferHead;
@@ -75,6 +75,7 @@ namespace CHServer {
 		EventDispatcher* m_dispatcher;
 
 		uv_write_t m_writer;
+		bool m_isWriting;
 	};
 
 }

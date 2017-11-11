@@ -13,7 +13,8 @@ namespace CHServer {
 		, m_sendBufferHead(&m_sendBuffer[0])
 		, m_sendBuffIndex(0)
 		, m_sendingBufferHead(&m_sendBuffer[1])
-		, m_dispatcher(dispatcher) {
+		, m_dispatcher(dispatcher)
+		, m_isWriting(false) {
 		for (int i = 0; i < SocketBase::MAX; i++) {
 			m_callback[i] = NULL;
 		}
@@ -36,14 +37,16 @@ namespace CHServer {
 
 	void SocketBase::Send(const char* data, int32_t len) {
 		AppendSendData(data, len);
-		if (!uv_is_writable((uv_stream_t*)GetHandle())) {
+		if (m_isWriting) {
 			// 已经在发送了，下一次再发
+			std::cout << "cant send\n";
 			return;
 		}
 		if (m_sendBuffIndex == 0) {
 			return;
 		}
-
+		m_isWriting = true;
+		std::cout << "sending\n";
 		uv_buf_t bufs;
 		static const int count = 1;
 		std::swap(m_sendBufferHead, m_sendingBufferHead);
@@ -117,20 +120,31 @@ namespace CHServer {
 	}
 
 	void SocketBase::Allocator(uv_handle_t* handle, size_t suggestedSize, uv_buf_t* buf) {
-		suggestedSize = 1024;
 		SocketBase* socket = (SocketBase*)handle->data;
-		uint32_t remainSize = (uint32_t)socket->m_receiveBuffer.size() - socket->m_receiveIndex;
-		if (remainSize == 0) {
-			if (socket->m_receiveStartIndex >= suggestedSize) {
-				buf->base = &socket->m_receiveBuffer[0];
-				buf->len = socket->m_receiveStartIndex;
-				return;
+		int32_t remainSpace = 0;
+		if (socket->m_receiveStartIndex > socket->m_receiveIndex) {
+			remainSpace = socket->m_receiveStartIndex - socket->m_receiveIndex;
+
+			buf->base = &socket->m_receiveBuffer[socket->m_receiveIndex];
+			buf->len = remainSpace;
+
+		} else {
+			remainSpace = (uint32_t)socket->m_receiveBuffer.size() - socket->m_receiveIndex;
+			if (remainSpace == 0) {
+				if (socket->m_receiveStartIndex > 0) {
+					buf->base = &socket->m_receiveBuffer[0];
+					buf->len = socket->m_receiveStartIndex;
+					socket->m_receiveIndex = 0;
+				} else {
+					socket->m_receiveBuffer.resize(suggestedSize + socket->m_receiveBuffer.size());
+					buf->base = &socket->m_receiveBuffer[socket->m_receiveIndex];
+					buf->len = (uint32_t)socket->m_receiveBuffer.size() - socket->m_receiveIndex;
+				}
 			} else {
-				socket->m_receiveBuffer.resize(suggestedSize + socket->m_receiveBuffer.size());
+				buf->base = &socket->m_receiveBuffer[socket->m_receiveIndex];
+				buf->len = remainSpace;
 			}
 		}
-		buf->base = &socket->m_receiveBuffer[socket->m_receiveIndex];
-		buf->len = suggestedSize - socket->m_receiveIndex;
 	}
 
 	void SocketBase::OnReceived(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) {
@@ -139,7 +153,13 @@ namespace CHServer {
 		}
 		SocketBase* socket = (SocketBase*)handle->data;
 		socket->m_receiveIndex += (int32_t)nread;
-		if (socket->m_receiveIndex > (int32_t)socket->m_receiveBuffer.size()) {
+		if (socket->m_receiveIndex == (int32_t)socket->m_receiveBuffer.size()) {
+			// 开始饶圈
+			if (socket->m_receiveStartIndex > 0) {
+				socket->m_receiveIndex = 0;
+			}
+
+		} else if (socket->m_receiveIndex > (int32_t)socket->m_receiveBuffer.size()) {
 			socket->m_receiveIndex = (int32_t)socket->m_receiveBuffer.size();
 		}
 
@@ -151,8 +171,9 @@ namespace CHServer {
 
 	void SocketBase::OnSent(uv_write_t* handle, int status) {
 		SocketBase* socket = (SocketBase*)handle->data;
+		socket->m_isWriting = false;
 		socket->Send(NULL, 0);
-
+		std::cout << "OnSent\n";
 	}
 
 	void SocketBase::OnConnected(uv_connect_t* handle, int status) {
