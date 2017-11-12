@@ -23,7 +23,7 @@ namespace CHServer {
 			return front;
 		}
 
-		size_t size() {
+		size_t Size() {
 			std::lock_guard<std::mutex> lock(m_mutex);
 			return m_data.size();
 		}

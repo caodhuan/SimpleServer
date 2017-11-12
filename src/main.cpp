@@ -3,6 +3,7 @@
 
 #include "uv.h"
 #include "mysql.h"
+#include "log.h"
 
 #include <iostream>
 #include <string.h>
@@ -37,6 +38,8 @@ void TestMysql() {
 
 
 void TestLibuv() {
+	CHLog::Instance()->InitLog(".", "ch");
+
 	EventDispatcher* dispatcher = new EventDispatcher();
 	SocketTCP* client = new SocketTCP(dispatcher);
 	bool readOnce = false;
@@ -56,10 +59,11 @@ void TestLibuv() {
 			readOnce = true;
 			client->RemoveBuff(1025);
 		}
-		//int readLen = client->ReadBuff(ptr);
-// 
-// 		std::string str;
-// 		str.assign(ptr, readLen);
+		int readLen = client->ReadBuff(ptr);
+
+		std::string tmp;
+		tmp.assign(ptr, readLen);
+		CHERRORLOG(tmp.c_str());
 // 
 // 		if (readLen < len) {
 // 			client->RemoveBuff(readLen);
@@ -69,6 +73,7 @@ void TestLibuv() {
 // 		client->RemoveBuff(readLen);
 		
 		//std::cout << str.c_str();
+		
 		client->Send(str.c_str(), str.size());
 	});
 
