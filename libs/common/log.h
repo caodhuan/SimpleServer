@@ -1,5 +1,6 @@
 #pragma once
 #include "singleton.h"
+#include "blockingqueue.h"
 
 namespace CHServer {
 	// 日志相关
@@ -11,5 +12,7 @@ namespace CHServer {
 
 	private:
 		CHLog();
+	private:
+		BlockingQueue<std::string> m_logData; // 考虑换 T
 	};
 }
