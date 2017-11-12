@@ -16,7 +16,7 @@ namespace CHServer {
 
 	int32_t Buffer::GetDataLength() {
 		if (m_head > m_tail) {
-			return m_data.size() - (m_head - m_tail);
+			return (int32_t)m_data.size() - (m_head - m_tail);
 		}
 		return m_tail - m_head;
 	}
@@ -29,11 +29,11 @@ namespace CHServer {
 		if (m_tail == m_head && m_head != 0) {
 			return 0;
 		}
-		return m_data.size() - m_tail + m_head;
+		return (int32_t)m_data.size() - m_tail + m_head;
 	}
 
 	int32_t Buffer::GetAllLength() {
-		return m_data.size();
+		return (int32_t)m_data.size();
 	}
 
 	void Buffer::AdjustLength(int32_t len) {
@@ -41,7 +41,7 @@ namespace CHServer {
 			return;
 		}
 
-		int32_t newLen = m_data.size() + len;
+		int32_t newLen = (int32_t)m_data.size() + len;
 
 		m_data.resize(newLen);
 
@@ -50,7 +50,7 @@ namespace CHServer {
 			if (m_tail <= len) {
 				// 有足够长的空间将转一圈的buff移到后面去
 				memcpy(&m_data[m_data.size() - len], &m_data[0], m_tail - 1);
-				m_tail = m_data.size() - len + m_tail + 1;
+				m_tail = (int32_t)m_data.size() - len + m_tail + 1;
 				m_tail %= m_data.size() + 1;
 			} else {
 				memcpy(&m_data[m_data.size() - len], &m_data[0], len);
@@ -77,7 +77,7 @@ namespace CHServer {
 		}
 
 		if (m_tail <= m_head) {
-			return m_data.size() - m_head;
+			return (int32_t)m_data.size() - m_head;
 		}
 
 		return m_tail - m_head;
@@ -131,7 +131,7 @@ namespace CHServer {
 				m_tail = len + m_tail;
 				if (m_head > 0) {
 					if (m_tail >= m_data.size()) {
-						m_tail -= m_data.size();
+						m_tail -= (int32_t)m_data.size();
 					}
 				}
 			} else {
