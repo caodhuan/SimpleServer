@@ -14,7 +14,7 @@ namespace CHServer {
 
 		T Take() {
 			std::unique_lock<std::mutex> lock(m_mutex);
-			m_condition.wait(lock, [this] (void) -> void {
+			m_condition.wait(lock, [this] (void) -> bool {
 				return !m_data.empty();
 			});
 
