@@ -3,6 +3,7 @@
 
 #include<cstring>
 #include <iostream>
+#include <thread>
 
 namespace CHServer {
 
@@ -92,7 +93,7 @@ namespace CHServer {
 	void SocketBase::Allocator(uv_handle_t* handle, size_t suggestedSize, uv_buf_t* buf) {
 		// 由于suggestedSize 总是65536
 		static const int SIZE = 1024;
-
+		std::cout << "Allocator thrad id = " << std::this_thread::get_id() << '\n';
 		SocketBase* socket = (SocketBase*)handle->data;
 		
 		if (socket->m_receiveBuffer->GetFreeLength() < SIZE) {
@@ -114,6 +115,7 @@ namespace CHServer {
 			socket->m_callback[RECEIVED]();
 		}
 
+		std::cout << "OnReceived thrad id = " << std::this_thread::get_id() << '\n';
 	}
 
 	void SocketBase::OnSent(uv_write_t* handle, int status) {

@@ -7,7 +7,7 @@ namespace CHServer {
 	Buffer::Buffer()
 		: m_head(0)
 		, m_tail(0) {
-		m_data.resize(1024);
+		m_data.resize(2048);
 	}
 
 	Buffer::~Buffer() {
