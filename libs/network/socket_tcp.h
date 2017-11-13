@@ -9,13 +9,14 @@ namespace CHServer {
 		virtual ~SocketTCP();
 
 	public:
-		bool InitSocket() override;
 
 		uv_handle_t* GetHandle() override;
 
 		void Close() override;
 
-		void Connect(std::string ip, int32_t port);
+		void Connect(const char* ip, int32_t port);
+
+		void Listen(const char* ip, int32_t port);
 	public:
 		void SetNodely(bool enable);
 

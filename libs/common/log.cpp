@@ -8,11 +8,12 @@
 #include <string>
 #include <functional>
 #include <thread>
+#include <fcntl.h>
 
 
 
 namespace CHServer {
-	static const char* const sLogLEVEL[] = { "DEBUG ", "ERROR ", };
+	static const char* const sLogLEVEL[] = { "ERROR ",  "DEBUG ", "WARNING " };
 
 	void CHLog::PrepareFile(const char* path, const char* prefix, uint32_t& day, uv_fs_t& fileHandle) {
 		time_t  now = time(NULL);
@@ -65,11 +66,11 @@ namespace CHServer {
 	void CHLog::DoLog() {
 		uv_fs_t fileHandle = { 0 };
 
-		uv_fs_t writeReq = {0};
-	
+		uv_fs_t writeReq = { 0 };
+
 		uint32_t currentDay = 0;
 		char newLine = '\n';
-		
+
 		uv_buf_t buf[5]; // time level content fileandline newline
 		buf[4] = uv_buf_init(&newLine, 1);
 
@@ -77,12 +78,12 @@ namespace CHServer {
 			LogData log = m_logData.Take();
 
 			PrepareFile(m_path.c_str(), m_fileNamePrefix.c_str(), currentDay, fileHandle);
-			
+
 			buf[0] = uv_buf_init((char*)log.data[0].c_str(), (unsigned int)log.data[0].size());
 			buf[1] = uv_buf_init((char*)log.data[1].c_str(), (unsigned int)log.data[1].size());
 			buf[2] = uv_buf_init((char*)log.data[2].c_str(), (unsigned int)log.data[2].size());
 			buf[3] = uv_buf_init((char*)log.data[3].c_str(), (unsigned int)log.data[3].size());
-			
+
 			int result = uv_fs_write(NULL, &writeReq, (uv_file)fileHandle.result, buf, sizeof(buf) / sizeof(buf[0]), -1, NULL);
 			if (result < 0) {
 				fprintf(stderr, "log failed %s%s%s%s\n", log.data[0].c_str(), log.data[1].c_str(), log.data[2].c_str(), log.data[3].c_str());
@@ -96,7 +97,6 @@ namespace CHServer {
 	}
 
 	CHLog::~CHLog() {
-
 	}
 
 	bool CHLog::InitLog(const char* path, const char* fileNamePrefix) {
@@ -106,7 +106,7 @@ namespace CHServer {
 			fprintf(stderr, "InitLog already inited!\n");
 			return false;
 		}
-		
+
 		m_fileNamePrefix = fileNamePrefix;
 
 		m_path = path;
@@ -128,7 +128,7 @@ namespace CHServer {
 		uv_fs_req_cleanup(&req);
 		m_exit = !(result == 0 || result == UV_EEXIST);
 
-		std::thread thread(std::bind(&CHLog::DoLog, this) );
+		std::thread thread(std::bind(&CHLog::DoLog, this));
 		thread.detach();
 
 		return !m_exit;
@@ -137,10 +137,12 @@ namespace CHServer {
 	void CHLog::UninitLog() {
 		m_exit = true;
 		std::lock_guard<std::mutex> lock(m_mutex);
+		// 唤醒一下，安全退出
+		CHEWARNINGLOG("UninitLog");
 	}
 
 	void CHLog::Log(const char* fileName, uint32_t lineNum, LOGLEVEL logLevel, const char* msg, ...) {
-	
+
 
 		static uint32_t lastSecond = 0;
 		static char formatTime[64] = { 0 };
@@ -160,8 +162,12 @@ namespace CHServer {
 		log.data[1].assign(sLogLEVEL[logLevel]);
 		log.data[2].assign(msgMetaInfo);
 		log.data[3].assign(msgContent);
-		
-		m_logData.Put(log);		
+
+		m_logData.Put(log);
+
+		if (logLevel == LOGLEVEL_WARNING) {
+			fprintf(stdout, "%s\n", msgContent);
+		}
 	}
 
 }

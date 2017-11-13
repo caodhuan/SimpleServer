@@ -43,7 +43,6 @@ void TestLibuv() {
 	EventDispatcher* dispatcher = new EventDispatcher();
 	SocketTCP* client = new SocketTCP(dispatcher);
 	bool readOnce = false;
-	client->InitSocket();
 	char msg[] = "12312312";
 	std::string str;
 	str.assign(msg);
@@ -77,9 +76,9 @@ void TestLibuv() {
 		client->Send(str.c_str(), str.size());
 	});
 
-	client->Connect("127.0.0.1", 2356);
+	client->Connect("127.0.0.1", 2345);
 	dispatcher->Run();
-	
+	CHLog::Instance()->UninitLog();
 }
 
 int main() {

@@ -9,11 +9,10 @@
 #include "buffer.h"
 
 namespace CHServer {
-	class ScoketBase;
+	class SocketBase;
 	class EventDispatcher;
 
 	typedef std::function<void(void)> SocketCallback;
-
 	// socket基类，封装通用的socekt操作
 	class SocketBase {
 	public:
@@ -21,13 +20,11 @@ namespace CHServer {
 		virtual ~SocketBase();
 
 	public:
-		virtual bool InitSocket() = 0;
 		virtual uv_handle_t* GetHandle() = 0;
 		virtual void Close() = 0;
 
 	public:
-		void SetCallback(SocketCallback connected,
-			SocketCallback received);
+		void SetCallback(SocketCallback connected, SocketCallback received);
 		bool IsClose();
 
 		void Send(const char* data, int32_t len);
@@ -43,7 +40,7 @@ namespace CHServer {
 	private:
 		void AppendSendData(const char* data, int32_t len);
 		
-	protected:
+	public:
 
 		static void OnNewConnection(uv_stream_t* handle, int status);
 
@@ -61,7 +58,7 @@ namespace CHServer {
 		enum {
 			CONNECTED = 0,
 			RECEIVED = 1,
-			MAX = 2,
+			MAX,
 		};
 		static const int32_t SendBuffCount = 2;
 		
@@ -73,7 +70,6 @@ namespace CHServer {
 		std::vector<char>* m_sendingBufferHead;
 
 		SocketCallback m_callback[MAX];
-
 		EventDispatcher* m_dispatcher;
 
 		uv_write_t m_writer;

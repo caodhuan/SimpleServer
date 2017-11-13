@@ -1,9 +1,11 @@
 #include "socket_base.h"
 #include "event_dispatcher.h"
+#include "log.h"
 
 #include<cstring>
 #include <iostream>
 #include <thread>
+
 
 namespace CHServer {
 
@@ -29,6 +31,7 @@ namespace CHServer {
 	void SocketBase::SetCallback(SocketCallback connected, SocketCallback received) {
 		m_callback[CONNECTED] = connected;
 		m_callback[RECEIVED] = received;
+
 	}
 
 	bool SocketBase::IsClose() {
@@ -88,6 +91,12 @@ namespace CHServer {
 	void SocketBase::OnNewConnection(uv_stream_t* handle, int status) {
 		SocketBase* socket = (SocketBase*)handle->data;
 		socket->m_callback[RECEIVED]();
+
+		/*
+			初始化一个tcp
+			然后 accept
+			uv_accept
+		*/
 	}
 
 	void SocketBase::Allocator(uv_handle_t* handle, size_t suggestedSize, uv_buf_t* buf) {
@@ -105,24 +114,27 @@ namespace CHServer {
 	}
 
 	void SocketBase::OnReceived(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) {
-		if (nread < 0) {
-			std::cout << uv_strerror(nread);
-		}
 		SocketBase* socket = (SocketBase*)handle->data;
-		socket->m_receiveBuffer->FillData(nread);
+		if (nread < 0) {
+			CHERRORLOG("OnReceived nread = %d", nread);
+			socket->Close();
+			return;
+		}
+		
+		socket->m_receiveBuffer->FillData((int32_t)nread);
 
 		if (socket->m_callback[RECEIVED]) {
 			socket->m_callback[RECEIVED]();
 		}
-
-		std::cout << "OnReceived thrad id = " << std::this_thread::get_id() << '\n';
+		CHDEBUGLOG("OnReceived thrad id = %d", std::this_thread::get_id());
 	}
 
 	void SocketBase::OnSent(uv_write_t* handle, int status) {
 		SocketBase* socket = (SocketBase*)handle->data;
 		socket->m_isWriting = false;
 		socket->Send(NULL, 0);
-		std::cout << "OnSent\n";
+
+		CHDEBUGLOG("OnSent");
 	}
 
 	void SocketBase::OnConnected(uv_connect_t* handle, int status) {

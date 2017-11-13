@@ -1,5 +1,6 @@
 #include "socket_tcp.h"
 #include "event_dispatcher.h"
+#include "log.h"
 
 namespace CHServer {
 
@@ -8,6 +9,9 @@ namespace CHServer {
 		, m_handle(NULL)
 		, m_connector(NULL) {
 
+		m_handle = new uv_tcp_t();
+		m_handle->data = this;
+		uv_tcp_init(m_dispatcher->GetLoop(), m_handle);
 	}
 
 	SocketTCP::~SocketTCP() {
@@ -20,17 +24,6 @@ namespace CHServer {
 		}
 	}
 
-	bool SocketTCP::InitSocket() {
-		if (m_handle) {
-			return false;
-		}
-
-		m_handle = new uv_tcp_t();
-		m_handle->data = this;
-		uv_tcp_init(m_dispatcher->GetLoop(), m_handle);
-		return true;
-	}
-
 	uv_handle_t* SocketTCP::GetHandle() {
 		return (uv_handle_t*)m_handle;
 	}
@@ -41,18 +34,38 @@ namespace CHServer {
 		m_handle = NULL;
 	}
 
-	void SocketTCP::Connect(std::string ip, int32_t port) {
+	void SocketTCP::Connect(const char* ip, int32_t port) {
 		if (m_connector) {
-			
+
 			return;
 		}
 		m_connector = new uv_connect_t();
 		m_connector->data = this;
 
 		sockaddr_in addr;
-		uv_ip4_addr(ip.c_str(), port, &addr);
+		uv_ip4_addr(ip, port, &addr);
 
 		uv_tcp_connect(m_connector, m_handle, (const sockaddr*)&addr, SocketBase::OnConnected);
+	}
+
+	void SocketTCP::Listen(const char* ip, int32_t port) {
+		sockaddr_in addr;
+		uv_ip4_addr(ip, port, &addr);
+
+		int result = uv_tcp_bind(m_handle, (const struct sockaddr*) &addr, 0);
+		if (result) {
+			CHERRORLOG("bind error");
+			return;
+		}
+
+		result = uv_listen((uv_stream_t*)m_handle, SOMAXCONN, SocketBase::OnNewConnection);
+
+		if (result) {
+			CHERRORLOG("listen error");
+			return;
+		}
+
+		CHEWARNINGLOG("listen on %s, %d", ip, port);
 	}
 
 	void SocketTCP::SetNodely(bool enable) {

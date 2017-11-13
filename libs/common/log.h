@@ -7,11 +7,11 @@
 #include <mutex>
 #include <atomic>
 
-struct tm;
 namespace CHServer {
 
-#define CHDEBUGLOG(msg, ...) CHLog::Instance()->Log(__FILE__, __LINE__, CHLog::LOGLEVEL_DEBUG, msg, ## __VA_ARGS__);
 #define CHERRORLOG(msg, ...) CHLog::Instance()->Log(__FILE__, __LINE__, CHLog::LOGLEVEL_ERROR, msg, ## __VA_ARGS__);
+#define CHDEBUGLOG(msg, ...) CHLog::Instance()->Log(__FILE__, __LINE__, CHLog::LOGLEVEL_DEBUG, msg, ## __VA_ARGS__);
+#define CHEWARNINGLOG(msg, ...) CHLog::Instance()->Log(__FILE__, __LINE__, CHLog::LOGLEVEL_WARNING, msg, ## __VA_ARGS__);
 
 	struct LogData {
 		std::string data[4];
@@ -24,8 +24,9 @@ namespace CHServer {
 		~CHLog();
 
 		enum LOGLEVEL {
-			LOGLEVEL_DEBUG = 0,
-			LOGLEVEL_ERROR = 1,
+			LOGLEVEL_ERROR = 0,
+			LOGLEVEL_DEBUG = 1,
+			LOGLEVEL_WARNING = 2,
 		};
 
 	public:
