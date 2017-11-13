@@ -105,7 +105,7 @@ namespace CHServer {
 		std::cout << "Allocator thrad id = " << std::this_thread::get_id() << '\n';
 		SocketBase* socket = (SocketBase*)handle->data;
 		
-		if (socket->m_receiveBuffer->GetFreeLength() < SIZE) {
+		if (socket->m_receiveBuffer->GetFreeLength() == 0) {
 			socket->m_receiveBuffer->AdjustLength(SIZE);
 		}
 

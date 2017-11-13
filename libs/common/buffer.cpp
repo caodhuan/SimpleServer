@@ -1,7 +1,9 @@
 #include "buffer.h"
+#include "log.h"
 
 #include<cstring>
 #include <stdio.h>
+
 
 namespace CHServer {
 	Buffer::Buffer()
@@ -29,7 +31,7 @@ namespace CHServer {
 		if (m_tail == m_head && m_head != 0) {
 			return 0;
 		}
-		return (int32_t)m_data.size() - m_tail + m_head;
+		return (int32_t)m_data.size()- m_tail; // 不能+head， 因为需要连续内存
 	}
 
 	int32_t Buffer::GetAllLength() {
@@ -49,9 +51,8 @@ namespace CHServer {
 		if (m_head >= m_tail) {
 			if (m_tail <= len) {
 				// 有足够长的空间将转一圈的buff移到后面去
-				memcpy(&m_data[m_data.size() - len], &m_data[0], m_tail - 1);
-				m_tail = (int32_t)m_data.size() - len + m_tail + 1;
-				m_tail %= m_data.size() + 1;
+				memcpy(&m_data[m_data.size() - len], &m_data[0], m_tail);
+				m_tail = (int32_t)m_data.size() - len + m_tail;
 			} else {
 				memcpy(&m_data[m_data.size() - len], &m_data[0], len);
 				m_tail -= len;
@@ -125,8 +126,15 @@ namespace CHServer {
 		}
 
 		if (m_head < m_tail) {
-			if (m_data.size() - m_tail > len) {
+			if (m_data.size() - m_tail >= len) {
 				m_tail += len;
+				if (m_tail == m_data.size())
+				{
+					if (m_head > 0)
+					{
+						m_tail = 0;
+					}
+				}
 			} else if (m_data.size() - m_tail + m_head >= len) {
 				m_tail = len + m_tail;
 				if (m_head > 0) {
@@ -135,13 +143,14 @@ namespace CHServer {
 					}
 				}
 			} else {
-				// CTODO 错误日志
+				CHERRORLOG("out out space");
+				return;
 			}
 		} else {
 			if (m_head - m_tail >= len) {
 				m_tail += len;
 			} else {
-				fprintf(stderr, "out out space\n");
+				CHERRORLOG("out out space");
 				return;
 
 			}
