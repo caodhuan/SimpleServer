@@ -13,8 +13,8 @@ namespace CHServer {
 		}
 	}
 
-	void EventDispatcher::Run() {
-		uv_run(m_loop, uv_run_mode::UV_RUN_DEFAULT);
+	void EventDispatcher::Run(int type) {
+		uv_run(m_loop, (uv_run_mode)type);
 	}
 
 }

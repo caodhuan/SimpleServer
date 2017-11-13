@@ -9,7 +9,7 @@ namespace CHServer {
 	Buffer::Buffer()
 		: m_head(0)
 		, m_tail(0) {
-		m_data.resize(2048);
+		m_data.resize(256);
 	}
 
 	Buffer::~Buffer() {
@@ -86,13 +86,13 @@ namespace CHServer {
 
 	void Buffer::FreeData(int32_t len) {
 		if (m_head == 0 && m_tail == 0) {
-			fprintf(stderr, "out out space\n");
+			CHERRORLOG("out out space");
 			return;
 		}
 
 		if (m_head < m_tail) {
 			if (m_tail - m_head < len) {
-				fprintf(stderr, "out out space\n");
+				CHERRORLOG("out out space");
 				return;
 			}
 
@@ -104,7 +104,7 @@ namespace CHServer {
 		} else {
 			// 不能一次性转圈
 			if (m_data.size() - m_head < len) {
-				fprintf(stderr, "out out space\n");
+				CHERRORLOG("out out space");
 				return;
 			}
 			m_head += len;
@@ -117,7 +117,7 @@ namespace CHServer {
 	void Buffer::FillData(int32_t len) {
 		if (GetFreeLength() < len) {
 			// CTODO 错误日志
-			fprintf(stderr, "out out space\n");
+			CHERRORLOG("out out space");
 			return;
 		}
 		if (m_head == 0 && m_tail == 0) {
@@ -133,13 +133,6 @@ namespace CHServer {
 					if (m_head > 0)
 					{
 						m_tail = 0;
-					}
-				}
-			} else if (m_data.size() - m_tail + m_head >= len) {
-				m_tail = len + m_tail;
-				if (m_head > 0) {
-					if (m_tail >= m_data.size()) {
-						m_tail -= (int32_t)m_data.size();
 					}
 				}
 			} else {

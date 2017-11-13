@@ -42,14 +42,13 @@ namespace CHServer {
 		AppendSendData(data, len);
 		if (m_isWriting) {
 			// 已经在发送了，下一次再发
-			std::cout << "cant send\n";
 			return;
 		}
 		if (m_sendBuffIndex == 0) {
 			return;
 		}
 		m_isWriting = true;
-		std::cout << "sending\n";
+
 		uv_buf_t bufs;
 		static const int count = 1;
 		std::swap(m_sendBufferHead, m_sendingBufferHead);
@@ -90,8 +89,10 @@ namespace CHServer {
 
 	void SocketBase::OnNewConnection(uv_stream_t* handle, int status) {
 		SocketBase* socket = (SocketBase*)handle->data;
-		socket->m_callback[RECEIVED]();
-
+		if (socket->m_callback[RECEIVED])
+		{
+			socket->m_callback[RECEIVED]();
+		}
 		/*
 			初始化一个tcp
 			然后 accept
@@ -102,7 +103,7 @@ namespace CHServer {
 	void SocketBase::Allocator(uv_handle_t* handle, size_t suggestedSize, uv_buf_t* buf) {
 		// 由于suggestedSize 总是65536
 		static const int SIZE = 1024;
-		std::cout << "Allocator thrad id = " << std::this_thread::get_id() << '\n';
+
 		SocketBase* socket = (SocketBase*)handle->data;
 		
 		if (socket->m_receiveBuffer->GetFreeLength() == 0) {
@@ -116,8 +117,8 @@ namespace CHServer {
 	void SocketBase::OnReceived(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) {
 		SocketBase* socket = (SocketBase*)handle->data;
 		if (nread < 0) {
-			CHERRORLOG("OnReceived nread = %d", nread);
-			socket->Close();
+			CHERRORLOG("OnReceived nread = %s", uv_err_name(nread) );
+			//socket->Close();
 			return;
 		}
 		
