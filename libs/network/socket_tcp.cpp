@@ -32,7 +32,7 @@ namespace CHServer {
 		return (uv_handle_t*)m_handle;
 	}
 
-	void SocketTCP::Close() {	// 直接close会有什么影响？
+	void SocketTCP::Close() {
 		uv_close((uv_handle_t*)m_handle, SocketBase::OnClose);
 		m_handle = NULL;
 	}

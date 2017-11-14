@@ -35,5 +35,7 @@ int main() {
 
 	dispatcher->Run();
 
+	server->Close();
+
 	CHLog::Instance()->UninitLog();
 }

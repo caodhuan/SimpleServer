@@ -19,7 +19,7 @@ namespace CHServer {
 		time_t  now = time(NULL);
 		now += 8 * 60 * 60;
 		tm* timeStruct = gmtime(&now);
-		if (fileHandle.result == 0) {
+		if (fileHandle.data == NULL) {
 			day = timeStruct->tm_mday;
 			char fileName[128] = { 0 };
 
@@ -52,22 +52,23 @@ namespace CHServer {
 	void CHLog::OpenFile(char* fileName, uv_fs_t& fileHandle) {
 		int result = 0;
 
-		if (fileHandle.result) {
+		if (fileHandle.data) {
 			uv_fs_close(NULL, &fileHandle, (uv_file)fileHandle.result, 0);
-			fileHandle.result = 0;
+			fileHandle.data = NULL;
 		}
 
 		result = uv_fs_open(NULL, &fileHandle, fileName, O_CREAT | O_RDWR | O_APPEND, S_IREAD | S_IWRITE, NULL);
 		if (result < 0) {
 			fprintf(stderr, "open file failed! name=%s, reason=%s", fileName, uv_strerror(result));
+			return;
 		}
+
+		fileHandle.data = (void*)result;
 	}
 
 	void CHLog::DoLog() {
 		uv_fs_t fileHandle = { 0 };
-
-		uv_fs_t writeReq = { 0 };
-
+		
 		uint32_t currentDay = 0;
 		char newLine = '\n';
 
@@ -84,12 +85,12 @@ namespace CHServer {
 			buf[2] = uv_buf_init((char*)log.data[2].c_str(), (unsigned int)log.data[2].size());
 			buf[3] = uv_buf_init((char*)log.data[3].c_str(), (unsigned int)log.data[3].size());
 
-			int result = uv_fs_write(NULL, &writeReq, (uv_file)fileHandle.result, buf, sizeof(buf) / sizeof(buf[0]), -1, NULL);
+			int result = uv_fs_write(NULL, &fileHandle, (uv_file)fileHandle.data, buf, sizeof(buf) / sizeof(buf[0]), -1, NULL);
 			if (result < 0) {
 				fprintf(stderr, "log failed %s%s%s%s\n", log.data[0].c_str(), log.data[1].c_str(), log.data[2].c_str(), log.data[3].c_str());
 			}
 		}
-		uv_fs_req_cleanup(&writeReq);
+		uv_fs_req_cleanup(&fileHandle);
 	}
 
 	CHLog::CHLog() {
