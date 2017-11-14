@@ -25,7 +25,10 @@ namespace CHServer {
 	}
 
 	SocketBase::~SocketBase() {
-
+		if (m_receiveBuffer) {
+			delete m_receiveBuffer;
+			m_receiveBuffer = NULL;
+		}
 	}
 
 	void SocketBase::SetCallback(SocketCallback connected, SocketCallback received) {
@@ -40,7 +43,7 @@ namespace CHServer {
 
 	void SocketBase::Send(const char* data, int32_t len) {
 		AppendSendData(data, len);
-		if (m_isWriting) {
+		if (m_isWriting || !IsClose()) {
 			// 已经在发送了，下一次再发
 			return;
 		}
@@ -89,8 +92,7 @@ namespace CHServer {
 
 	void SocketBase::OnNewConnection(uv_stream_t* handle, int status) {
 		SocketBase* socket = (SocketBase*)handle->data;
-		if (socket->m_callback[RECEIVED])
-		{
+		if (socket->m_callback[RECEIVED]) {
 			socket->m_callback[RECEIVED]();
 		}
 		/*
@@ -105,7 +107,7 @@ namespace CHServer {
 		static const int SIZE = 1024;
 
 		SocketBase* socket = (SocketBase*)handle->data;
-		
+
 		if (socket->m_receiveBuffer->GetFreeLength() == 0) {
 			socket->m_receiveBuffer->AdjustLength(SIZE);
 		}
@@ -117,11 +119,11 @@ namespace CHServer {
 	void SocketBase::OnReceived(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) {
 		SocketBase* socket = (SocketBase*)handle->data;
 		if (nread < 0) {
-			CHERRORLOG("OnReceived nread = %s", uv_err_name(nread) );
-			//socket->Close();
+			CHERRORLOG("OnReceived nread = %s", uv_err_name(nread));
+			socket->Close();
 			return;
 		}
-		
+
 		socket->m_receiveBuffer->FillData((int32_t)nread);
 
 		if (socket->m_callback[RECEIVED]) {
@@ -147,7 +149,12 @@ namespace CHServer {
 	}
 
 	void SocketBase::OnClose(uv_handle_t* handle) {
+		CHDEBUGLOG("closed!!!");
 		SocketBase* socket = (SocketBase*)handle->data;
-		socket->Close();
+		delete socket;
+		socket = nullptr;
+		delete handle;
+		handle = NULL;
+
 	}
 }

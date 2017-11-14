@@ -15,9 +15,13 @@ namespace CHServer {
 	}
 
 	SocketTCP::~SocketTCP() {
+		CHDEBUGLOG("socket deleted");
 		if (m_handle) {
-			Close();
+			CHERRORLOG("m_handle is still alive on destructor!");
+			delete m_handle;
+			m_handle = NULL;
 		}
+
 		if (m_connector) {
 			delete m_connector;
 			m_connector = NULL;
@@ -29,8 +33,7 @@ namespace CHServer {
 	}
 
 	void SocketTCP::Close() {	// 直接close会有什么影响？
-		uv_close((uv_handle_t*)m_handle, NULL);
-		delete m_handle;
+		uv_close((uv_handle_t*)m_handle, SocketBase::OnClose);
 		m_handle = NULL;
 	}
 
