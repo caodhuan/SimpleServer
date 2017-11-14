@@ -85,7 +85,7 @@ namespace CHServer {
 			buf[2] = uv_buf_init((char*)log.data[2].c_str(), (unsigned int)log.data[2].size());
 			buf[3] = uv_buf_init((char*)log.data[3].c_str(), (unsigned int)log.data[3].size());
 
-			int result = uv_fs_write(NULL, &fileHandle, (uv_file)fileHandle.data, buf, sizeof(buf) / sizeof(buf[0]), -1, NULL);
+			int result = uv_fs_write(NULL, &fileHandle, (uv_file)*((int*)(&fileHandle.data)), buf, sizeof(buf) / sizeof(buf[0]), -1, NULL);
 			if (result < 0) {
 				fprintf(stderr, "log failed %s%s%s%s\n", log.data[0].c_str(), log.data[1].c_str(), log.data[2].c_str(), log.data[3].c_str());
 			}
