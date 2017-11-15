@@ -14,7 +14,7 @@ int main() {
 	static int number = 0;
 	server->SetCallback([&] {
 		
-		CHEWARNINGLOG("do nothing");
+		CHWARNINGLOG("do nothing");
 	}, [&] {
 		std::cout << ++number << "conneted" << std::endl;
 		SocketTCP* client = new SocketTCP(dispatcher);

@@ -1,3 +1,8 @@
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+
+
 #include "socket_tcp.h"
 #include "event_dispatcher.h"
 
@@ -29,6 +34,8 @@ void TestMysql() {
 			}
 		}
 	}
+
+	mysql_close(mysql);
 }
 
 
@@ -82,7 +89,7 @@ void TestLibuv100000() {
 
 	EventDispatcher* dispatcher = new EventDispatcher();
 
-	for (int i = 0; i < 100000; ++i) {
+	for (int i = 0; i < 0; ++i) {
 		SocketTCP* client = new SocketTCP(dispatcher);
 
 
@@ -123,15 +130,17 @@ void TestLibuv100000() {
 
 	dispatcher->Run();
 	CHLog::Instance()->UninitLog();
+	delete dispatcher;
 }
 
 
-EventDispatcher* dispatcher = new EventDispatcher();
-
-
 int main() {
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
+
 	TestMysql();
 
 	TestLibuv100000();
-	//TestLibuv();
+	//char* test = new char[1000];
+	//_CrtDumpMemoryLeaks();
 }

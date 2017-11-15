@@ -11,7 +11,7 @@ namespace CHServer {
 
 #define CHERRORLOG(msg, ...) CHLog::Instance()->Log(__FILE__, __LINE__, CHLog::LOGLEVEL_ERROR, msg, ## __VA_ARGS__);
 #define CHDEBUGLOG(msg, ...) CHLog::Instance()->Log(__FILE__, __LINE__, CHLog::LOGLEVEL_DEBUG, msg, ## __VA_ARGS__);
-#define CHEWARNINGLOG(msg, ...) CHLog::Instance()->Log(__FILE__, __LINE__, CHLog::LOGLEVEL_WARNING, msg, ## __VA_ARGS__);
+#define CHWARNINGLOG(msg, ...) CHLog::Instance()->Log(__FILE__, __LINE__, CHLog::LOGLEVEL_WARNING, msg, ## __VA_ARGS__);
 
 	struct LogData {
 		std::string data[4];
@@ -49,6 +49,7 @@ namespace CHServer {
 
 		std::mutex m_mutex;
 		std::atomic_bool m_exit;
+		std::thread* m_thread;
 
 		std::string m_path; // init之外，都是readonly
 		std::string m_fileNamePrefix; // init之外，都是readonly

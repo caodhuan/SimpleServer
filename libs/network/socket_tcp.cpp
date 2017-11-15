@@ -68,7 +68,7 @@ namespace CHServer {
 			return;
 		}
 
-		CHEWARNINGLOG("listen on %s, %d", ip, port);
+		CHWARNINGLOG("listen on %s, %d", ip, port);
 	}
 
 	void SocketTCP::SetNodely(bool enable) {

@@ -8,7 +8,7 @@ namespace CHServer {
 
 	EventDispatcher::~EventDispatcher() {
 		if (m_loop) {
-			uv_loop_close(m_loop);
+			uv_loop_delete(m_loop);
 			m_loop = nullptr;
 		}
 	}

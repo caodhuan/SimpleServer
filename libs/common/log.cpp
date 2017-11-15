@@ -53,8 +53,10 @@ namespace CHServer {
 		int result = 0;
 
 		if (fileHandle.data) {
-			uv_fs_close(NULL, &fileHandle, (uv_file)fileHandle.result, 0);
+			uv_fs_close(NULL, &fileHandle, (uv_file)*((int*)(&fileHandle.data)), NULL);
 			fileHandle.data = NULL;
+
+			uv_fs_req_cleanup(&fileHandle);
 		}
 
 		result = uv_fs_open(NULL, &fileHandle, fileName, O_CREAT | O_RDWR | O_APPEND, S_IREAD | S_IWRITE, NULL);
@@ -62,13 +64,14 @@ namespace CHServer {
 			fprintf(stderr, "open file failed! name=%s, reason=%s", fileName, uv_strerror(result));
 			return;
 		}
+		uv_fs_req_cleanup(&fileHandle);
 
 		fileHandle.data = (void*)result;
 	}
 
 	void CHLog::DoLog() {
 		uv_fs_t fileHandle = { 0 };
-		
+
 		uint32_t currentDay = 0;
 		char newLine = '\n';
 
@@ -89,7 +92,9 @@ namespace CHServer {
 			if (result < 0) {
 				fprintf(stderr, "log failed %s%s%s%s\n", log.data[0].c_str(), log.data[1].c_str(), log.data[2].c_str(), log.data[3].c_str());
 			}
+			uv_fs_req_cleanup(&fileHandle);
 		}
+		uv_fs_close(NULL, &fileHandle, (uv_file)*((int*)(&fileHandle.data)), NULL);
 		uv_fs_req_cleanup(&fileHandle);
 	}
 
@@ -98,6 +103,10 @@ namespace CHServer {
 	}
 
 	CHLog::~CHLog() {
+		if (m_thread) {
+			m_thread->join();
+			delete m_thread;
+		}
 	}
 
 	bool CHLog::InitLog(const char* path, const char* fileNamePrefix) {
@@ -120,17 +129,16 @@ namespace CHServer {
 		size_t find = tmpPath.find("/");
 
 		uv_fs_t req;
-		uint32_t result;
+		uint32_t result = 0;
 
 		while (find != std::string::npos) {
-			result = uv_fs_mkdir(uv_default_loop(), &req, tmpPath.substr(0, find).c_str(), 0755, NULL);
+			result = uv_fs_mkdir(NULL, &req, tmpPath.substr(0, find).c_str(), 0755, NULL);
 			find = tmpPath.find("/", find + 1);
 		}
 		uv_fs_req_cleanup(&req);
 		m_exit = !(result == 0 || result == UV_EEXIST);
 
-		std::thread thread(std::bind(&CHLog::DoLog, this));
-		thread.detach();
+		m_thread = new std::thread(std::bind(&CHLog::DoLog, this));
 
 		return !m_exit;
 	}
@@ -139,7 +147,7 @@ namespace CHServer {
 		m_exit = true;
 		std::lock_guard<std::mutex> lock(m_mutex);
 		// 唤醒一下，安全退出
-		CHEWARNINGLOG("UninitLog");
+		CHWARNINGLOG("UninitLog");
 	}
 
 	void CHLog::Log(const char* fileName, uint32_t lineNum, LOGLEVEL logLevel, const char* msg, ...) {
