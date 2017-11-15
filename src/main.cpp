@@ -1,7 +1,8 @@
+#ifdef WIN32
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
 #include <crtdbg.h>
-
+#endif
 
 #include "socket_tcp.h"
 #include "event_dispatcher.h"
@@ -135,9 +136,10 @@ void TestLibuv100000() {
 
 
 int main() {
+#ifdef WIN32
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
-
+#endif
 	TestMysql();
 
 	TestLibuv100000();

@@ -6,6 +6,7 @@
 
 #include <mutex>
 #include <atomic>
+#include <thread>
 
 namespace CHServer {
 
