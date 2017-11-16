@@ -1,14 +1,14 @@
 cmake_minimum_required(VERSION 2.8)
 
-include(cmake/macros.cmake)
-
 project(CHServer)
+
+include(cmake/macros.cmake)
+include(cmake/3rd.cmake)
 
 add_executable(MyTest ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
 
 add_executable(MyServerTest ${CMAKE_CURRENT_SOURCE_DIR}/src/server.cpp)
 
-add_subdirectory(3rd)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -std=c++11")
 target_link_libraries(MyTest libuv)
@@ -56,7 +56,6 @@ endgroup()
 
 target_link_libraries(network libuv common) 
 
-target_link_libraries(MyTest network db common ) 
+target_link_libraries(MyTest network db common libprotobuf) 
 
-target_link_libraries(MyServerTest network db common ) 
-
+target_link_libraries(MyServerTest network db common libprotobuf) 

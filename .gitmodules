@@ -1,3 +1,6 @@
 [submodule "3rd/libuv"]
 	path = 3rd/libuv
 	url = https://github.com/libuv/libuv
+[submodule "3rd/protobuf"]
+	path = 3rd/protobuf
+	url = https://github.com/google/protobuf
