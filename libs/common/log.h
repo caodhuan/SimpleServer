@@ -50,7 +50,7 @@ namespace CHServer {
 
 		std::mutex m_mutex;
 		std::atomic_bool m_exit;
-		std::thread* m_thread;
+		std::thread m_thread;
 
 		std::string m_path; // init之外，都是readonly
 		std::string m_fileNamePrefix; // init之外，都是readonly

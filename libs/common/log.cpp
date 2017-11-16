@@ -103,9 +103,8 @@ namespace CHServer {
 	}
 
 	CHLog::~CHLog() {
-		if (m_thread) {
-			m_thread->join();
-			delete m_thread;
+		if (m_thread.joinable()) {
+			m_thread.join();
 		}
 	}
 
@@ -138,7 +137,7 @@ namespace CHServer {
 		uv_fs_req_cleanup(&req);
 		m_exit = !(result == 0 || result == UV_EEXIST);
 
-		m_thread = new std::thread(std::bind(&CHLog::DoLog, this));
+		m_thread = std::thread(&CHLog::DoLog, this);
 
 		return !m_exit;
 	}

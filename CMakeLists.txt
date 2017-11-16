@@ -49,9 +49,10 @@ include_directories(
 
 
 group(base)
+	addlib(common ${CMAKE_CURRENT_SOURCE_DIR}/libs/common)
 	addlib(network ${CMAKE_CURRENT_SOURCE_DIR}/libs/network)
 	addlib(db ${CMAKE_CURRENT_SOURCE_DIR}/libs/db)
-	addlib(common ${CMAKE_CURRENT_SOURCE_DIR}/libs/common)
+	addlib(protos ${CMAKE_CURRENT_SOURCE_DIR}/libs/protos)
 endgroup()
 
 target_link_libraries(network libuv common) 
