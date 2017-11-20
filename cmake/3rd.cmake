@@ -21,3 +21,5 @@ endif()
 
 
 add_subdirectory(3rd)
+
+add_subdirectory(3rd/hiredis)
