@@ -9,6 +9,8 @@ add_executable(MyTest ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
 
 add_executable(MyServerTest ${CMAKE_CURRENT_SOURCE_DIR}/src/server.cpp)
 
+add_executable(MyRedisTest ${CMAKE_CURRENT_SOURCE_DIR}/src/redis_test.cpp)
+
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -std=c++11")
 target_link_libraries(MyTest libuv)
@@ -29,6 +31,10 @@ if(WIN32)
 	target_link_libraries(MyTest ws2_32.lib Psapi.lib IPHLPAPI.lib userenv.lib)
 	target_link_libraries(MyServerTest ws2_32.lib Psapi.lib IPHLPAPI.lib userenv.lib)
 
+	target_link_libraries(MyRedisTest ws2_32.lib Psapi.lib IPHLPAPI.lib userenv.lib)
+
+	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/3rd/hiredis/win/redis/deps/hiredis/)
+
 else()
 	set(lib_path ${CMAKE_CURRENT_SOURCE_DIR}/3rd/mysql/linux)
 
@@ -39,7 +45,7 @@ else()
 		file(GLOB mysqlclient_lib ${lib_path}/lib/libmysqlclient.a)
     endif()
 	target_link_libraries(MyTest ${mysqlclient_lib} pthread dl )
-	
+	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/3rd/hiredis/linux/hiredis/)
 endif()
 
 include_directories(${lib_path}/include)
@@ -60,3 +66,5 @@ target_link_libraries(network libuv common)
 target_link_libraries(MyTest network db common libprotobuf) 
 
 target_link_libraries(MyServerTest network db common libprotobuf) 
+
+target_link_libraries(MyRedisTest network db common libprotobuf hiredis) 
