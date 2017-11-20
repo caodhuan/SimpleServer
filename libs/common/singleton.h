@@ -6,7 +6,7 @@ namespace CHServer {
 	class SingletonBase {
 	public:
 		static T* Instance() {
-			static T instance;
+			static T instance; // no race condition, after c++11
 			return &instance;
 		}
 	protected:
