@@ -17,6 +17,7 @@ namespace CHServer {
 	struct LogData {
 		std::string data[4];
 	};
+
 	// 日志相关
 	// 线程安全的
 	class CHLog
@@ -32,12 +33,12 @@ namespace CHServer {
 
 	public:
 		bool InitLog(const char* path, const char* fileNamePrefix);
+
 		void UninitLog();
 
 		void Log(const char* fileName, uint32_t lineNum, LOGLEVEL logLevel, const char* msg, ...);
 
 	private:
-
 		void DoLog();
 
 		static void PrepareFile(const char* path, const char* prefix, uint32_t& day, uv_fs_t& fileHandle);
@@ -54,8 +55,10 @@ namespace CHServer {
 
 		std::string m_path; // init之外，都是readonly
 		std::string m_fileNamePrefix; // init之外，都是readonly
+
 	private:
 		friend class SingletonBase<CHLog>;
+
 		CHLog();
 	};
 }

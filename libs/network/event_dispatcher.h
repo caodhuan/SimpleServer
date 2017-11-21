@@ -14,6 +14,7 @@ namespace CHServer {
 		}
 
 		void Run(int type = uv_run_mode::UV_RUN_DEFAULT);
+
 	private:
 		uv_loop_t* m_loop;
 	};

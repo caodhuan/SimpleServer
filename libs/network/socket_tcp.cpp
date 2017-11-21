@@ -26,6 +26,7 @@ namespace CHServer {
 			delete m_connector;
 			m_connector = NULL;
 		}
+		
 	}
 
 	uv_handle_t* SocketTCP::GetHandle() {

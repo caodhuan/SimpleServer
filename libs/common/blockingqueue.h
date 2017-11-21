@@ -2,6 +2,7 @@
 #include <deque>
 #include <mutex>
 #include <condition_variable>
+
 namespace CHServer {
 	template<typename T>
 	class BlockingQueue {

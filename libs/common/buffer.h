@@ -9,7 +9,9 @@ namespace CHServer {
 	class Buffer {
 	public:
 		Buffer();
+
 		~Buffer();
+
 	public:
 		// 有效数据大小
 		int32_t GetDataLength();

@@ -96,6 +96,7 @@ add_library(libuv STATIC ${libuvsrc} ${libuvinclude} ${platform})
 set_target_properties(libuv PROPERTIES FOLDER 3rd)
 if(WIN32)
 	target_compile_definitions(libuv PUBLIC NDIS_IF_MAX_STRING_SIZE=256)
+	
 else()
 	target_link_libraries(libuv pthread)
 

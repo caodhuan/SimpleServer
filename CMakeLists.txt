@@ -33,7 +33,7 @@ if(WIN32)
 
 	target_link_libraries(MyRedisTest ws2_32.lib Psapi.lib IPHLPAPI.lib userenv.lib)
 
-	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/3rd/hiredis/win/redis/deps/hiredis/)
+	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/3rd/hiredis/win/hiredis/)
 
 else()
 	set(lib_path ${CMAKE_CURRENT_SOURCE_DIR}/3rd/mysql/linux)
@@ -63,9 +63,10 @@ group(base)
 endgroup()
 
 target_link_libraries(network libuv common) 
+target_link_libraries(db hiredis) 
 
 target_link_libraries(MyTest network db common libprotobuf) 
 
 target_link_libraries(MyServerTest network db common libprotobuf) 
 
-target_link_libraries(MyRedisTest network db common libprotobuf hiredis) 
+target_link_libraries(MyRedisTest network  db common libprotobuf) 
