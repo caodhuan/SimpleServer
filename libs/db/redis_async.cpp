@@ -17,6 +17,7 @@ extern "C" {
 
 
 namespace CHServer {
+	static int32_t CallbackIndex = 0;
 
 	RedisAsync::RedisAsync()
 		: m_context(nullptr)
@@ -27,34 +28,61 @@ namespace CHServer {
 	RedisAsync::~RedisAsync() {
 		if (m_context) {
 			redisAsyncFree(m_context);
+			m_context = NULL;
 		}
 	}
 
-	void RedisAsync::Connect(const char* ip, const int32_t port, EventDispatcher* dispatcher) {
+	bool RedisAsync::Connect(const char* ip, const int32_t port, EventDispatcher* dispatcher) {
 		if (!dispatcher) {
 			CHERRORLOG("dispatcher is null");
-			return;
+			return false;
 		}
 
 		m_context = redisAsyncConnect(ip, port);
 
 		if (!m_context || m_context->err) {
 			CHERRORLOG(m_context->errstr);
-			return;
+			return false;
 		}
-
 
 		m_context->ev.data = this;
 
-		RedisAttach(m_context, dispatcher);
+		if (RedisAttach(m_context, dispatcher) != REDIS_OK) {
+			CHERRORLOG("attach error!");
+			return false;
+		}
 
 		redisAsyncSetConnectCallback(m_context, &RedisAsync::OnConnectCallback);
 
 		redisAsyncSetDisconnectCallback(m_context, &RedisAsync::OnDisconnectCallback);
+
+		return true;
 	}
 
-	void RedisAsync::AsyncCommand(const char* command) {
-		redisAsyncCommand(m_context, RedisAsync::OnCmdCallback, NULL, command);
+	void RedisAsync::Command(RedisAsyncCommandCallback callback, const char *format, ...) {
+		va_list ap;
+		va_start(ap, format);
+
+		redisAsyncCommand(m_context, RedisAsync::OnCmdCallback, (void*)CallbackIndex, format, ap);
+
+		AddCallback(CallbackIndex++, callback);
+		
+	}
+
+	void RedisAsync::Command(RedisAsyncCommandCallback callback, int argc, const char **argv, const size_t *argvlen) {
+		redisAsyncCommandArgv(m_context, RedisAsync::OnCmdCallback, (void*)CallbackIndex, argc, argv, argvlen);
+
+		m_callbacks.insert(std::make_pair(CallbackIndex, callback));
+
+		AddCallback(CallbackIndex++, callback);
+	}
+
+	void RedisAsync::AddCallback(int32_t key, RedisAsyncCommandCallback callback) {
+		if (m_callbacks.find(key) != m_callbacks.end()) {
+			CHERRORLOG("to many commands!");
+		}
+
+		m_callbacks.insert(std::make_pair(key, callback));
 	}
 
 	void RedisAsync::OnConnectCallback(const redisAsyncContext *c, int status) {
@@ -66,12 +94,19 @@ namespace CHServer {
 	}
 
 	void RedisAsync::OnCmdCallback(redisAsyncContext *c, void *r, void *privatedata) {
+		RedisAsync* instance = (RedisAsync*)c->ev.data;
+
+		auto callback = instance->m_callbacks.find((int32_t)privatedata);
+		if (callback != instance->m_callbacks.end()) {
+			RedisAsyncCommandCallback func = callback->second;
+
+			instance->m_callbacks.erase(callback);
+
+			func(instance, r);
+		}
+
 		redisReply *reply = (redisReply*)r;
-		RedisAsync* instance = (RedisAsync*)privatedata;
-
-
-		CHWARNINGLOG(reply->str);
-
+		CHWARNINGLOG("thread ID = %d, result = %s", std::this_thread::get_id(), reply->str);
 	}
 
 	int RedisAsync::RedisAttach(redisAsyncContext* context, EventDispatcher* dispatcher) {
