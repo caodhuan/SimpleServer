@@ -17,7 +17,7 @@ namespace CHServer {
 
 		redisReply* Command(const char *format, ...);
 
-		redisReply* Command(int argc, const char **argv, const size_t *argvlen);
+		redisReply* Command(int argc, const char **argv, const uint64_t *argvlen);
 
 	private:
 		redisContext* m_context;

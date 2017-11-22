@@ -63,14 +63,14 @@ namespace CHServer {
 		va_list ap;
 		va_start(ap, format);
 
-		redisAsyncCommand(m_context, RedisAsync::OnCmdCallback, (void*)CallbackIndex, format, ap);
+		redisAsyncCommand(m_context, RedisAsync::OnCmdCallback, (void*)*(int*)&CallbackIndex, format, ap);
 
 		AddCallback(CallbackIndex++, callback);
 		
 	}
 
-	void RedisAsync::Command(RedisAsyncCommandCallback callback, int argc, const char **argv, const size_t *argvlen) {
-		redisAsyncCommandArgv(m_context, RedisAsync::OnCmdCallback, (void*)CallbackIndex, argc, argv, argvlen);
+	void RedisAsync::Command(RedisAsyncCommandCallback callback, int argc, const char **argv, const uint64_t *argvlen) {
+		redisAsyncCommandArgv(m_context, RedisAsync::OnCmdCallback, (void*)*(int*)&CallbackIndex, argc, argv, argvlen);
 
 		m_callbacks.insert(std::make_pair(CallbackIndex, callback));
 
@@ -96,7 +96,7 @@ namespace CHServer {
 	void RedisAsync::OnCmdCallback(redisAsyncContext *c, void *r, void *privatedata) {
 		RedisAsync* instance = (RedisAsync*)c->ev.data;
 
-		auto callback = instance->m_callbacks.find((int32_t)privatedata);
+		auto callback = instance->m_callbacks.find((int32_t)(int64_t)(int32_t*)privatedata);
 		if (callback != instance->m_callbacks.end()) {
 			RedisAsyncCommandCallback func = callback->second;
 
@@ -106,7 +106,7 @@ namespace CHServer {
 		}
 
 		redisReply *reply = (redisReply*)r;
-		CHWARNINGLOG("thread ID = %d, result = %s", std::this_thread::get_id(), reply->str);
+		CHWARNINGLOG("thread ID = %lu, result = %s", std::this_thread::get_id(), reply->str);
 	}
 
 	int RedisAsync::RedisAttach(redisAsyncContext* context, EventDispatcher* dispatcher) {

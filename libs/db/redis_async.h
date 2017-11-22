@@ -27,7 +27,7 @@ namespace CHServer {
 
 		void Command(RedisAsyncCommandCallback callback, const char *format, ...);
 
-		void Command(RedisAsyncCommandCallback callback, int argc, const char **argv, const size_t *argvlen);
+		void Command(RedisAsyncCommandCallback callback, int argc, const char **argv, const uint64_t *argvlen);
 	private:
 		void AddCallback(int32_t key, RedisAsyncCommandCallback callback);
 

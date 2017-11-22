@@ -34,8 +34,8 @@ namespace CHServer {
 		return reply;
 	}
 
-	redisReply* RedisSync::Command(int argc, const char **argv, const size_t *argvlen) {
-
+	redisReply* RedisSync::Command(int argc, const char **argv, const uint64_t *argvlen) {
+		
 		redisReply* reply = (redisReply*)redisCommandArgv(m_context, argc, argv, argvlen);
 
 		return reply;

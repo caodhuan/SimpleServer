@@ -38,12 +38,12 @@ void RedisAsyncTest() {
 	RedisAsync redisAsync;
 	redisAsync.Connect("192.168.143.89", 6379, &dispatcher);
 
-	redisAsync.AsyncCommand([&](RedisAsync*, void* r) -> void {
+	redisAsync.Command([&](RedisAsync*, void* r) -> void {
 		redisReply* reply = (redisReply*)r;
 		std::cout << "this thread = " << std::this_thread::get_id() << "  reply =" << reply->str << std::endl;
 	}, "SET KEY 1234");
 
-	redisAsync.AsyncCommand([&](RedisAsync*, void* r) -> void {
+	redisAsync.Command([&](RedisAsync*, void* r) -> void {
 		redisReply* reply = (redisReply*)r;
 		std::cout << "this thread = " << std::this_thread::get_id() << "  reply =" << reply->str << std::endl;
 	}, "GET KEY");
