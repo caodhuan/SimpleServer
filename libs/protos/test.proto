@@ -1,6 +1,0 @@
-syntax = "proto3";
-
-message tTestProto {
-	int32 iFirst = 1;
-	string sSecond = 2;
-}
