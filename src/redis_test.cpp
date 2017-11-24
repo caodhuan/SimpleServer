@@ -27,28 +27,36 @@ extern"C" {
 using namespace std;
 using namespace CHServer;
 
+EventDispatcher dispatcher;
+
+void MainExecuate(RedisAsync* redisAsync, void* r) {
+
+// 	redisReply* reply = (redisReply*)r;
+// 	std::cout << "MainExecuate this thread = " << std::this_thread::get_id() << "  reply =" << reply->str << std::endl;
+// 
+// 	string command;
+// 	std::getline(std::cin, command);
+// 	redisAsync->Command(MainExecuate, command.c_str());
+// 
+// 	std::cout << "MainExecuate this thread = " << std::this_thread::get_id() << std::endl;
+	dispatcher.BreakRun();
+	
+}
+
 void RedisAsyncTest() {
+	
+	RedisAsync redisAsync;
 
 #ifdef WIN32
 	aeCreateEventLoop(std::thread::hardware_concurrency());
 #endif // WIN32
-
-	EventDispatcher dispatcher;
-
-	RedisAsync redisAsync;
+		
 	redisAsync.Connect("192.168.143.89", 6379, &dispatcher);
 
-	redisAsync.Command([&](RedisAsync*, void* r) -> void {
-		redisReply* reply = (redisReply*)r;
-		std::cout << "this thread = " << std::this_thread::get_id() << "  reply =" << reply->str << std::endl;
-	}, "SET KEY 1234");
-
-	redisAsync.Command([&](RedisAsync*, void* r) -> void {
-		redisReply* reply = (redisReply*)r;
-		std::cout << "this thread = " << std::this_thread::get_id() << "  reply =" << reply->str << std::endl;
-	}, "GET KEY");
+	redisAsync.Command(MainExecuate, "SET KEY 1234");
 
 	std::cout << "this thread = " << std::this_thread::get_id() << std::endl;
+
 	dispatcher.Run();
 }
 

@@ -12,7 +12,7 @@ add_executable(MyServerTest ${CMAKE_CURRENT_SOURCE_DIR}/src/server.cpp)
 add_executable(MyRedisTest ${CMAKE_CURRENT_SOURCE_DIR}/src/redis_test.cpp)
 
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -std=c++11 -g")
 target_link_libraries(MyTest libuv)
 target_link_libraries(MyServerTest libuv)
 

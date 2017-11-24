@@ -185,14 +185,7 @@ namespace CHServer {
 		}
 	}
 
-	void RedisAsync::OnClose(uv_handle_t* handle) {
-
-	}
-
 	void RedisAsync::RedisCleanup(void* privateData) {
-		RedisAsync* instance = (RedisAsync*)privateData;
-
-		instance->m_context = NULL;
-		uv_close((uv_handle_t*)&instance->m_poll, OnClose);
+		// 需要做的清理操作
 	}
 }

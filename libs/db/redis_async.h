@@ -45,7 +45,6 @@ namespace CHServer {
 		static void RedisDelRead(void* privateData);
 		static void RedisAddWrite(void* privateData);
 		static void RedisDelWrite(void* privateData);
-		static void OnClose(uv_handle_t* handle);
 		static void RedisCleanup(void* privateData);
 
 	private:

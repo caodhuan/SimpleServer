@@ -14,7 +14,5 @@ namespace CHServer {
 		~Session();
 	private:
 		SocketBase* m_socket;
-
-		std::vector<Channel*> m_channels;
 	};
 }
