@@ -4,7 +4,7 @@ project(CHServer)
 
 include(cmake/macros.cmake)
 include(cmake/3rd.cmake)
-
+include(cmake/libs.cmake)
 add_executable(MyTest ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
 
 add_executable(MyServerTest ${CMAKE_CURRENT_SOURCE_DIR}/src/server.cpp)
@@ -53,14 +53,6 @@ include_directories(
 	3rd/libuv/include
 	3rd/libuv/src)
 
-
-group(base)
-	addlib(common ${CMAKE_CURRENT_SOURCE_DIR}/libs/common)
-	addlib(network ${CMAKE_CURRENT_SOURCE_DIR}/libs/network)
-	addlib(db ${CMAKE_CURRENT_SOURCE_DIR}/libs/db)
-	addlib(protos ${CMAKE_CURRENT_SOURCE_DIR}/libs/protos)
-	addlib(server ${CMAKE_CURRENT_SOURCE_DIR}/libs/server)
-endgroup()
 
 target_link_libraries(network libuv common) 
 target_link_libraries(db hiredis) 
