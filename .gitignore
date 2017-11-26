@@ -1,0 +1,3 @@
+libs/protos/commonprotobuf.h
+libs/protos/*.pb.h
+libs/protos/*.pb.cc

@@ -13,7 +13,7 @@ macro(endgroup)
 endmacro()
 
 macro(addlib name path)
-	file(GLOB files ${path}/*.[h|c]*)
+	file(GLOB files ${path}/*)
 	add_library(${name} ${files})
 	include_directories(${path})
 	add2group(${name})
