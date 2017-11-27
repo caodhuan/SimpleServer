@@ -20,7 +20,7 @@ find_program (googleprotoc protoc)
 
 if(googleprotoc) 
 	execute_process(
-	COMMAND googleprotoc ${PROTO} -I=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/
+	COMMAND ${googleprotoc} ${PROTO} -I=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/
 	)
 
 else()
