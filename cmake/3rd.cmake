@@ -19,7 +19,7 @@ else()
 endif()
 
 
-# 只是protobuf的cmake
+# libuv的cmake
 add_subdirectory(3rd)
 
 # hiredis

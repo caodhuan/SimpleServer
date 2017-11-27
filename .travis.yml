@@ -16,4 +16,4 @@ addons:
     - cmake
     - cmake-data
     - protobuf-compiler
-script: cmake --version && cmake . && make
+script: cd 3rd/protobuf/cmake && cmake --version && cmake -Dprotobuf_BUILD_TESTS=OFF . && make && cd ../../../ && cmake . && make
