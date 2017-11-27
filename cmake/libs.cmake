@@ -47,6 +47,8 @@ source_group(GeneratedFiles FILES ${GENERATEDSRC} ${GENERATEDHEAD} )
 source_group(protos FILES ${PROTO} )
 
 foreach(files ${GENERATEDHEAD})
+	message(${files})
+	
 	string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/" "" ONEHREAD ${files} )
 	string(APPEND COMMONINCLUDECONTENT "#include \"${ONEHREAD}\"\n")
 endforeach()
