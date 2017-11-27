@@ -13,6 +13,6 @@ addons:
     packages:
     - gcc-4.8
     - g++-4.8
-    - cmake3.3
+    - cmake-3.3
     - protobuf-compiler-3.4.0
 script: cmake . && make
