@@ -16,13 +16,26 @@ set(COMMONPROTOBUFHEADER "${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/commonprotobuf
 file(GLOB PROTO
 	${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/*.proto)
 
-execute_process(
-COMMAND ${CMAKE_CURRENT_BINARY_DIR}/3rd/protobuf/cmake/Debug/protoc.exe ${PROTO} -I=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/
-)
+find_program ( googleprotoc protoc-c )
 
-execute_process(
-COMMAND ${CMAKE_CURRENT_BINARY_DIR}/3rd/protobuf/cmake/Release/protoc.exe ${PROTO} -I=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/
-)
+if(${googleprotoc}) 
+	execute_process(
+	COMMAND ${googleprotoc} ${PROTO} -I=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/
+	)
+
+else()
+	# debug和release都尝试一下
+	# 这里需要先cmake一次,编译后，再cmake一次
+	execute_process(
+	COMMAND ${CMAKE_CURRENT_BINARY_DIR}/3rd/protobuf/cmake/Debug/protoc.exe ${PROTO} -I=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/
+	)
+
+	execute_process(
+	COMMAND ${CMAKE_CURRENT_BINARY_DIR}/3rd/protobuf/cmake/Release/protoc.exe ${PROTO} -I=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/
+	)
+endif()
+
+
 
 file(GLOB GENERATEDSRC
 	${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/*.cc)
