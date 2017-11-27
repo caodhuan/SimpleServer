@@ -16,6 +16,11 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -std=c++11 -g")
 target_link_libraries(MyTest libuv)
 target_link_libraries(MyServerTest libuv)
 
+find_library(protobuf_lib protobuf)
+if(protobuf_lib)
+	set(libprotobuf ${protobuf_lib})
+endif()
+
 if(WIN32)
 	set(lib_path ${CMAKE_CURRENT_SOURCE_DIR}/3rd/mysql/win)
 	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi /Od /Oy- /MD ") #mysqlclient只能是MD  ？

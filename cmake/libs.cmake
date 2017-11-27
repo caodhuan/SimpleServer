@@ -21,19 +21,24 @@ find_program (googleprotoc protoc)
 
 if(googleprotoc) 
 	execute_process(
-	COMMAND ${googleprotoc} ${PROTO} -I=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/
+		COMMAND ${googleprotoc} ${PROTO} -I=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/
 	)
 
 else()
 	# debug和release都尝试一下
 	# 这里需要先cmake一次,编译后，再cmake一次
+	if(EXISTS ${CMAKE_CURRENT_BINARY_DIR}/3rd/protobuf/cmake/Debug/protoc.exe)
+		set(protoexe  ${CMAKE_CURRENT_BINARY_DIR}/3rd/protobuf/cmake/Debug/protoc.exe)
+	elseif(EXISTS ${CMAKE_CURRENT_BINARY_DIR}/3rd/protobuf/cmake/Release/protoc.exe)
+		set(protoexe  ${CMAKE_CURRENT_BINARY_DIR}/3rd/protobuf/cmake/Debug/protoc.exe)
+	else()
+		set(protoexe  ${CMAKE_CURRENT_BINARY_DIR}/3rd/protobuf/cmake/protoc)
+	endif()
+	
 	execute_process(
-		COMMAND ${CMAKE_CURRENT_BINARY_DIR}/3rd/protobuf/cmake/Debug/protoc.exe ${PROTO} -I=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/
+		COMMAND ${protoexe} ${PROTO} -I=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/
 	)
 
-	execute_process(
-		COMMAND ${CMAKE_CURRENT_BINARY_DIR}/3rd/protobuf/cmake/Release/protoc.exe ${PROTO} -I=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/
-	)
 endif()
 
 
@@ -69,6 +74,6 @@ group(base)
 endgroup()
 
 # 增加custom build
-	add_custom_command(TARGET protos PRE_BUILD 
-		COMMAND protoc ${PROTO} -I=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/ --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/
-		)
+add_custom_command(TARGET protos PRE_BUILD 
+	COMMAND protoc ${PROTO} -I=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/ --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/
+	)
