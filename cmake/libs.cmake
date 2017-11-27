@@ -16,11 +16,11 @@ set(COMMONPROTOBUFHEADER "${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/commonprotobuf
 file(GLOB PROTO
 	${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/*.proto)
 
-find_program ( googleprotoc protoc-c )
+find_program (googleprotoc protoc)
 
-if(${googleprotoc}) 
+if(googleprotoc) 
 	execute_process(
-	COMMAND ${googleprotoc} ${PROTO} -I=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/
+	COMMAND googleprotoc ${PROTO} -I=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/
 	)
 
 else()
@@ -48,7 +48,7 @@ source_group(protos FILES ${PROTO} )
 
 foreach(files ${GENERATEDHEAD})
 	message(${files})
-	
+
 	string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/" "" ONEHREAD ${files} )
 	string(APPEND COMMONINCLUDECONTENT "#include \"${ONEHREAD}\"\n")
 endforeach()
