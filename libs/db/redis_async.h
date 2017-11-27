@@ -28,6 +28,7 @@ namespace CHServer {
 		void Command(RedisAsyncCommandCallback callback, const char *format, ...);
 
 		void Command(RedisAsyncCommandCallback callback, int argc, const char **argv, const uint64_t *argvlen);
+
 	private:
 		void AddCallback(int32_t key, RedisAsyncCommandCallback callback);
 
@@ -50,7 +51,7 @@ namespace CHServer {
 	private:
 		redisAsyncContext* m_context;
 
-		// 用来包装 event 相关的参数，参考hiredis/adapters/libuv.h
+		
 		uv_poll_t m_poll;
 		int m_events;
 

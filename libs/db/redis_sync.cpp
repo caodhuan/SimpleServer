@@ -23,6 +23,8 @@ namespace CHServer {
 			return false;
 		}
 		m_context = redisConnect("192.168.143.89", 6379);
+
+		return true;
 	}
 
 	redisReply* RedisSync::Command(const char *format, ...) {
