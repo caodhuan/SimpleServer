@@ -14,7 +14,8 @@ endif()
 set(COMMONPROTOBUFHEADER "${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/commonprotobuf.h")
 
 file(GLOB PROTO
-	${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/*.proto)
+	${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/*.proto
+	)
 
 find_program (googleprotoc protoc)
 
@@ -27,36 +28,36 @@ else()
 	# debug和release都尝试一下
 	# 这里需要先cmake一次,编译后，再cmake一次
 	execute_process(
-	COMMAND ${CMAKE_CURRENT_BINARY_DIR}/3rd/protobuf/cmake/Debug/protoc.exe ${PROTO} -I=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/
+		COMMAND ${CMAKE_CURRENT_BINARY_DIR}/3rd/protobuf/cmake/Debug/protoc.exe ${PROTO} -I=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/
 	)
 
 	execute_process(
-	COMMAND ${CMAKE_CURRENT_BINARY_DIR}/3rd/protobuf/cmake/Release/protoc.exe ${PROTO} -I=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/
+		COMMAND ${CMAKE_CURRENT_BINARY_DIR}/3rd/protobuf/cmake/Release/protoc.exe ${PROTO} -I=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/
 	)
 endif()
 
 
 
 file(GLOB GENERATEDSRC
-	${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/*.cc)
+	${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/*.cc
+	)
 
 file(GLOB GENERATEDHEAD
-	${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/*.h)
+	${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/*.h
+	)
 
 source_group(GeneratedFiles FILES ${GENERATEDSRC} ${GENERATEDHEAD} )
 source_group(protos FILES ${PROTO} )
 
-foreach(files ${GENERATEDHEAD})
-	message(${files})
 
-	string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/" "" ONEHREAD ${files} )
-	string(APPEND COMMONINCLUDECONTENT "#include \"${ONEHREAD}\"\n")
-endforeach()
-
-
-if(COMMONINCLUDECONTENT)
+if(EXISTS ${GENERATEDHEAD})
 	file(WRITE ${COMMONPROTOBUFHEADER} "#pragma once\n")
-	file(APPEND ${COMMONPROTOBUFHEADER} ${COMMONINCLUDECONTENT})
+
+	foreach(files ${GENERATEDHEAD})
+
+		string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/" "" ONEHREAD ${files} )
+		file(APPEND ${COMMONPROTOBUFHEADER} "#include \"${ONEHREAD}\"\n")
+	endforeach()
 endif()
 
 group(base)
