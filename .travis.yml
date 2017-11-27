@@ -14,5 +14,6 @@ addons:
     - gcc-4.8
     - g++-4.8
     - cmake
+    - cmake-data
     - protobuf-compiler
-script: cmake . && make
+script: cmake --version && cmake . && make
