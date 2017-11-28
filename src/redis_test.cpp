@@ -22,13 +22,13 @@ extern"C" {
 }
 
 #endif // WIN32
+#include "redis_factory.h"
 
 
 using namespace std;
 using namespace CHServer;
 
-EventDispatcher dispatcher;
-
+EventDispatcher* dispatcher = new EventDispatcher();
 void MainExecuate(RedisAsync* redisAsync, void* r) {
 
 // 	redisReply* reply = (redisReply*)r;
@@ -39,25 +39,27 @@ void MainExecuate(RedisAsync* redisAsync, void* r) {
 // 	redisAsync->Command(MainExecuate, command.c_str());
 // 
 // 	std::cout << "MainExecuate this thread = " << std::this_thread::get_id() << std::endl;
-	dispatcher.BreakRun();
-	
+
+	//std::this_thread::sleep_for(2s);
+	//dispatcher->BreakRun();
+	RedisFactory::Instance()->DeleteRedisAsync(redisAsync);
 }
 
 void RedisAsyncTest() {
 	
-	RedisAsync redisAsync;
+	RedisAsync* redis = RedisFactory::Instance()->CreateRedisAsync();
 
 #ifdef WIN32
 	aeCreateEventLoop(std::thread::hardware_concurrency());
 #endif // WIN32
 		
-	redisAsync.Connect("192.168.143.89", 6379, &dispatcher);
+	redis->Connect("192.168.143.89", 6379, dispatcher);
 
-	redisAsync.Command(MainExecuate, "SET KEY 1234");
+	redis->Command(MainExecuate, "SET KEY 1234");
 
 	std::cout << "this thread = " << std::this_thread::get_id() << std::endl;
 
-	dispatcher.Run();
+	dispatcher->Run();
 }
 
 int main() {
@@ -86,4 +88,9 @@ int main() {
 	RedisAsyncTest();
 
 	CHLog::Instance()->UninitLog();
+	
+	
+	delete dispatcher;
+
+	
 }

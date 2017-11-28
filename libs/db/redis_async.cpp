@@ -21,7 +21,8 @@ namespace CHServer {
 
 	RedisAsync::RedisAsync()
 		: m_context(nullptr)
-		, m_events(0) {
+		, m_events(0)
+		, m_poll(new uv_poll_t){
 
 	}
 
@@ -30,6 +31,9 @@ namespace CHServer {
 			redisAsyncFree(m_context);
 			m_context = NULL;
 		}
+
+		// 在OnClose里delete m_poll
+		uv_close((uv_handle_t*)m_poll, RedisAsync::OnClose);
 	}
 
 	bool RedisAsync::Connect(const char* ip, const int32_t port, EventDispatcher* dispatcher) {
@@ -118,12 +122,12 @@ namespace CHServer {
 		context->ev.addWrite = RedisAsync::RedisAddWrite;
 		context->ev.delWrite = RedisAsync::RedisDelWrite;
 		context->ev.cleanup = RedisAsync::RedisCleanup;
-		instance->m_poll.data = instance;
+		instance->m_poll->data = instance;
 		int fd = context->c.fd;
 #ifdef WIN32
 		fd = RFDMap::getInstance().lookupSocket(context->c.fd);
 #endif
-		if (uv_poll_init_socket(dispatcher->GetLoop(), &instance->m_poll, fd) != 0) {
+		if (uv_poll_init_socket(dispatcher->GetLoop(), instance->m_poll, fd) != 0) {
 			return REDIS_ERR;
 		}
 
@@ -150,7 +154,7 @@ namespace CHServer {
 
 		instance->m_events |= UV_READABLE;
 
-		uv_poll_start(&instance->m_poll, instance->m_events, RedisPoll);
+		uv_poll_start(instance->m_poll, instance->m_events, RedisPoll);
 	}
 
 	void RedisAsync::RedisDelRead(void* privateData) {
@@ -159,9 +163,9 @@ namespace CHServer {
 		instance->m_events &= ~UV_READABLE;
 
 		if (instance->m_events) {
-			uv_poll_start(&instance->m_poll, instance->m_events, RedisPoll);
+			uv_poll_start(instance->m_poll, instance->m_events, RedisPoll);
 		} else {
-			uv_poll_stop(&instance->m_poll);
+			uv_poll_stop(instance->m_poll);
 		}
 	}
 
@@ -170,7 +174,7 @@ namespace CHServer {
 
 		instance->m_events |= UV_WRITABLE;
 
-		uv_poll_start(&instance->m_poll, instance->m_events, RedisPoll);
+		uv_poll_start(instance->m_poll, instance->m_events, RedisPoll);
 	}
 
 	void RedisAsync::RedisDelWrite(void* privateData) {
@@ -179,13 +183,18 @@ namespace CHServer {
 		instance->m_events &= ~UV_WRITABLE;
 
 		if (instance->m_events) {
-			uv_poll_start(&instance->m_poll, instance->m_events, RedisPoll);
+			uv_poll_start(instance->m_poll, instance->m_events, RedisPoll);
 		} else {
-			uv_poll_stop(&instance->m_poll);
+			uv_poll_stop(instance->m_poll);
 		}
 	}
 
 	void RedisAsync::RedisCleanup(void* privateData) {
 		// 需要做的清理操作
 	}
+
+	void RedisAsync::OnClose(uv_handle_t* handle) {
+		delete handle;
+	}
+
 }

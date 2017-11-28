@@ -62,3 +62,12 @@ target_link_libraries(MyTest network db common libprotobuf)
 target_link_libraries(MyServerTest network db common libprotobuf) 
 
 target_link_libraries(MyRedisTest network  db common libprotobuf) 
+
+
+if(UNIX)
+	FIND_LIBRARY(gperftools profiler)
+	if(gperftools)
+		message(${gperftools})
+		target_link_libraries(common ${gperftools} tcmalloc unwind)
+	endif()
+endif()

@@ -9,7 +9,7 @@
 struct redisAsyncContext;
 
 namespace CHServer {
-	
+
 	class EventDispatcher;
 
 	class RedisAsync;
@@ -17,11 +17,7 @@ namespace CHServer {
 	typedef std::function<void(RedisAsync*, void* r)> RedisAsyncCommandCallback;
 
 	class RedisAsync {
-	public:
-		RedisAsync();
-
-		~RedisAsync();
-
+		friend class RedisFactory;
 	public:
 		bool Connect(const char* ip, const int32_t port, EventDispatcher* dispatcher);
 
@@ -48,11 +44,17 @@ namespace CHServer {
 		static void RedisDelWrite(void* privateData);
 		static void RedisCleanup(void* privateData);
 
+		static void OnClose(uv_handle_t* handle);
+	private:
+		RedisAsync();
+
+		~RedisAsync();
+
 	private:
 		redisAsyncContext* m_context;
 
-		
-		uv_poll_t m_poll;
+
+		uv_poll_t* m_poll;
 		int m_events;
 
 	private:
