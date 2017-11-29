@@ -89,7 +89,7 @@ int main() {
 
 	CHLog::Instance()->UninitLog();
 	
-	
+	char* tes = new char[11000];
 	delete dispatcher;
 
 	

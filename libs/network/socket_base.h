@@ -27,10 +27,10 @@ namespace CHServer {
 		void SetCallback(SocketCallback connected, SocketCallback received);
 		bool IsClose();
 
-		void Send(const char* data, int32_t len);
+		void Send(const char* data, uint16_t len);
 
-
-		int32_t GetBuffLength();
+		// 可以读取的字节数
+		int32_t GetDataLength();
 
 		// read之后, buff依然存在，当确定不需要，调用RemoveBuff
 		// 如果返回的读取字节数小于 GetBuffLength，那么RemoveBuff之后在读一次即可
@@ -38,7 +38,7 @@ namespace CHServer {
 		void RemoveBuff(int32_t len);
 
 	private:
-		void AppendSendData(const char* data, int32_t len);
+		void AppendSendData(const char* data, uint16_t len);
 		
 	public:
 

@@ -19,6 +19,7 @@ namespace CHServer {
 	}
 
 	void EventDispatcher::BreakRun() {
+		// CTODO: 需要关闭所有的handler
 		uv_stop(m_loop);
 	}
 

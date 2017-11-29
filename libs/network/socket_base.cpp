@@ -41,7 +41,7 @@ namespace CHServer {
 		return GetHandle() == NULL;
 	}
 
-	void SocketBase::Send(const char* data, int32_t len) {
+	void SocketBase::Send(const char* data, uint16_t len) {
 		AppendSendData(data, len);
 		if (m_isWriting || !IsClose()) {
 			// 已经在发送了，下一次再发
@@ -64,7 +64,7 @@ namespace CHServer {
 
 	}
 
-	int32_t SocketBase::GetBuffLength() {
+	int32_t SocketBase::GetDataLength() {
 		return m_receiveBuffer->GetDataLength();
 	}
 
@@ -78,7 +78,7 @@ namespace CHServer {
 		m_receiveBuffer->FreeData(len);
 	}
 
-	void SocketBase::AppendSendData(const char* data, int32_t len) {
+	void SocketBase::AppendSendData(const char* data, uint16_t len) {
 		if (!data || len == 0) {
 			return;
 		}

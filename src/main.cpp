@@ -54,7 +54,7 @@ void TestLibuv() {
 
 		client->Send(msg, sizeof(msg));
 	}, [&]()-> void {
-		int len = client->GetBuffLength();
+		int len = client->GetDataLength();
 		char* ptr = NULL;
 
 		if (!readOnce && len > 1025) {
