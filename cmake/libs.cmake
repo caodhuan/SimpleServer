@@ -32,8 +32,6 @@ execute_process(
 	COMMAND ${protoexe} ${PROTO} -I=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/
 )
 
-
-
 file(GLOB GENERATEDSRC
 	${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/*.cc
 	)
