@@ -48,7 +48,7 @@ namespace CHServer {
 
 			if (!ProcessPacket(data + sizeof(m_head), m_head.totalLength - sizeof(m_head))) {
 				// 关闭连接，打日志
-
+				m_socket->Close();
 			}
 
 			m_socket->RemoveBuff(m_head.totalLength);
