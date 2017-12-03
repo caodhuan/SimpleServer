@@ -13,21 +13,20 @@ namespace CHServer {
 
 	}
 
-	void ServerBase::BeforeInitilize() {
-
-	}
-
 	bool ServerBase::Initilize() {
+		if (!BeforeInitilize()) {
+			return false;
+		}
+
 		m_dispatcher = new EventDispatcher();
 
-		return true;
-	}
-
-	void ServerBase::AfterInitilize() {
-
+		return AfterInitilize();
 	}
 
 	void ServerBase::Finalize() {
+		
+		BeforeFinalize();
+
 		for (auto item : m_sessions) {
 			delete item;
 		}
@@ -37,6 +36,8 @@ namespace CHServer {
 			delete m_dispatcher;
 			m_dispatcher = NULL;
 		}
+
+		AfterFinalize();
 	}
 
 }

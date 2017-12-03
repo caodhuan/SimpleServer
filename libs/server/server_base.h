@@ -12,13 +12,13 @@ namespace CHServer {
 		ServerBase();
 		virtual ~ServerBase();
 	public:
-		virtual void BeforeInitilize();
+		virtual bool BeforeInitilize() = 0;
 		bool Initilize();
-		virtual void AfterInitilize();
+		virtual bool AfterInitilize() = 0;
 
-		virtual void BeforeFinalize();
+		virtual void BeforeFinalize() = 0;
 		void Finalize();
-		virtual void AfterFinalize();
+		virtual void AfterFinalize() = 0;
 
 	private:
 		EventDispatcher* m_dispatcher;
