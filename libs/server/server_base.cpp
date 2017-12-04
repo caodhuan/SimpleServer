@@ -1,6 +1,7 @@
 #include "server_base.h"
 #include "event_dispatcher.h"
 #include "session.h"
+#include "log.h"
 
 namespace CHServer {
 
@@ -15,6 +16,11 @@ namespace CHServer {
 
 	bool ServerBase::Initilize() {
 		if (!BeforeInitilize()) {
+			return false;
+		}
+
+		if (m_dispatcher) {
+			CHERRORLOG("reinitilzed");
 			return false;
 		}
 
