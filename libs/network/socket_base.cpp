@@ -17,7 +17,7 @@ namespace CHServer {
 		, m_dispatcher(dispatcher)
 		, m_isWriting(false) {
 		for (int i = 0; i < SocketBase::MAX; i++) {
-			m_callback[i] = NULL;
+			m_callback[i] = nullptr;
 		}
 
 		m_writer.data = this;

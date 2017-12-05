@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdint.h>
 #include <vector>
 #ifdef WIN32 
 #include <WinSock2.h>

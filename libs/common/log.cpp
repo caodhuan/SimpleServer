@@ -10,7 +10,7 @@
 #include <thread>
 #include <fcntl.h>
 
-
+#include "common.h"
 
 namespace CHServer {
 	static const char* const sLogLEVEL[] = { "ERROR ",  "DEBUG ", "WARNING " };
