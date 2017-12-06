@@ -1,15 +1,21 @@
 #include "my_server.h"
 
-bool CHServer::MyServer::BeforeInitilize() {
-	return true;
-}
+namespace CHServer {
 
-bool CHServer::MyServer::AfterInitilize() {
-	return true;
-}
+	static MyServer server;
 
-void CHServer::MyServer::BeforeFinalize() {
-}
+	bool MyServer::BeforeInitilize() {
+		return true;
+	}
 
-void CHServer::MyServer::AfterFinalize() {
+	bool MyServer::AfterInitilize() {
+		return true;
+	}
+
+	void MyServer::BeforeFinalize() {
+	}
+
+	void MyServer::AfterFinalize() {
+	}
+
 }

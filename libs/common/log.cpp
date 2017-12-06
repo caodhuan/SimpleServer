@@ -13,7 +13,7 @@
 #include "common.h"
 
 namespace CHServer {
-	static const char* const sLogLEVEL[] = { "ERROR ",  "DEBUG ", "WARNING " };
+	static const char* const sLogLEVEL[] = { "ERROR ", "DEBUG ", "WARNING " };
 
 	void CHLog::PrepareFile(const char* path, const char* prefix, uint32_t& day, uv_fs_t& fileHandle) {
 		time_t  now = time(NULL);
@@ -78,6 +78,7 @@ namespace CHServer {
 		uv_buf_t buf[5]; // time level content fileandline newline
 		buf[4] = uv_buf_init(&newLine, 1);
 
+		uint32_t size = 5;
 		while (!m_exit) {
 			LogData log = m_logData.Take();
 
@@ -88,7 +89,12 @@ namespace CHServer {
 			buf[2] = uv_buf_init((char*)log.data[2].c_str(), (unsigned int)log.data[2].size());
 			buf[3] = uv_buf_init((char*)log.data[3].c_str(), (unsigned int)log.data[3].size());
 
-			int result = uv_fs_write(NULL, &fileHandle, (uv_file)*((int*)(&fileHandle.data)), buf, sizeof(buf) / sizeof(buf[0]), -1, NULL);
+			if (buf[3].base[buf[3].len - 1] == '\n') {
+				size = 4;
+			} else {
+				size = 5;
+			}
+			int result = uv_fs_write(NULL, &fileHandle, (uv_file)*((int*)(&fileHandle.data)), buf, size, -1, NULL);
 			if (result < 0) {
 				fprintf(stderr, "log failed %s%s%s%s\n", log.data[0].c_str(), log.data[1].c_str(), log.data[2].c_str(), log.data[3].c_str());
 			}

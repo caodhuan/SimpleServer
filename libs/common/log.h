@@ -21,7 +21,7 @@ namespace CHServer {
 	// 日志相关
 	// 线程安全的
 	class CHLog
-		: public SingletonBase<CHLog> {
+		: public Singleton<CHLog> {
 	public:
 		~CHLog();
 
@@ -57,7 +57,7 @@ namespace CHServer {
 		std::string m_fileNamePrefix; // init之外，都是readonly
 
 	private:
-		friend class SingletonBase<CHLog>;
+		friend class Singleton<CHLog>;
 
 		CHLog();
 	};

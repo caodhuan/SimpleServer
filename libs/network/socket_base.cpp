@@ -43,7 +43,7 @@ namespace CHServer {
 
 	void SocketBase::Send(const char* data, uint16_t len) {
 		AppendSendData(data, len);
-		if (m_isWriting || !IsClosed()) {
+		if (m_isWriting || IsClosed()) {
 			// 已经在发送了，下一次再发
 			return;
 		}

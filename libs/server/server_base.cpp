@@ -7,6 +7,8 @@
 #include "uv.h"
 
 namespace CHServer {
+	template<>
+	ServerBase* SingletonInheritable<ServerBase>::m_Instance = 0;
 
 	ServerBase::ServerBase()
 		: m_dispatcher(NULL)
@@ -72,6 +74,10 @@ namespace CHServer {
 
 	void ServerBase::Run() {
 		m_dispatcher->Run();
+	}
+
+	void ServerBase::RemoveSession(Session* session) {
+		m_sessions.erase(session);
 	}
 
 }

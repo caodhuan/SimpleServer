@@ -2,6 +2,7 @@
 #include "server_base.h"
 
 namespace CHServer {
+
 class MyServer : public ServerBase {
 public:
 	virtual bool BeforeInitilize() override;
@@ -11,7 +12,6 @@ public:
 	virtual void BeforeFinalize() override;
 
 	virtual void AfterFinalize() override;
-
 };
 
 }

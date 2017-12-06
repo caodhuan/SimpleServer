@@ -4,6 +4,8 @@
 #include <functional>
 #include "log.h"
 
+#include "server_base.h"
+
 namespace CHServer {
 
 	Session::Session(SocketBase* socket)
@@ -21,7 +23,6 @@ namespace CHServer {
 	}
 
 	void Session::OnConnected() {
-
 	}
 
 	void Session::SendPacket(uint16_t cmd, const char* data, uint16_t len) {
@@ -72,6 +73,8 @@ namespace CHServer {
 
 		delete m_socket;
 		m_socket = nullptr;
+
+		ServerBase::Instance()->RemoveSession(this);
 	}
 
 	void Session::Close() {
@@ -93,7 +96,7 @@ namespace CHServer {
 			if (!msg.ParsePartialFromArray(data, len)) {
 				return false;
 			}
-
+			CHDEBUGLOG(msg.DebugString().c_str());
 			break;
 		}
 		return true;

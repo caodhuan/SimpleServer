@@ -13,6 +13,8 @@
 
 #include <iostream>
 #include <string.h>
+#include "session.h"
+#include "common.pb.h"
 
 
 using namespace std;
@@ -41,7 +43,6 @@ void TestMysql() {
 
 
 void TestLibuv() {
-	CHLog::Instance()->InitLog(".", "ch");
 
 	EventDispatcher* dispatcher = new EventDispatcher();
 	SocketTCP* client = new SocketTCP(dispatcher);
@@ -75,7 +76,7 @@ void TestLibuv() {
 		// 		}
 		// 		client->RemoveBuff(readLen);
 
-				//std::cout << str.c_str();
+		//std::cout << str.c_str();
 
 		client->Send(str.c_str(), str.size());
 	}, nullptr);
@@ -83,12 +84,9 @@ void TestLibuv() {
 	//client->Connect("139.199.199.121", 2345);
 	client->Connect("127.0.0.1", 2345);
 	dispatcher->Run();
-	
-	CHLog::Instance()->UninitLog();
 }
 
 void TestLibuv100000() {
-	CHLog::Instance()->InitLog(".", "ch");
 
 	EventDispatcher* dispatcher = new EventDispatcher();
 
@@ -127,24 +125,45 @@ void TestLibuv100000() {
 
 		//client->Connect("127.0.0.1", 2345);
 		client->Connect("127.0.0.1", 2345);
-		
+
 	}
 	std::cout << "connected" << std::endl;
 
 	dispatcher->Run();
-	CHLog::Instance()->UninitLog();
+
 	delete dispatcher;
 }
 
+void TestSession() {
+	EventDispatcher* dispatcher = new EventDispatcher();
+	SocketTCP* tcp = new SocketTCP(dispatcher);
+	Session* serve = new Session(tcp);
+	tcp->SetCallback([&] {
+		PlayerInfo info;
+		info.set_name("test name");
+		std::string data = info.SerializeAsString();
+		serve->SendPacket(1, data.c_str(), data.size());
+	}, nullptr, nullptr);
 
+
+	tcp->Connect("127.0.0.1", 2345);
+
+
+	dispatcher->Run();
+}
 int main() {
 #ifdef WIN32
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
 #endif
+	CHLog::Instance()->InitLog(".", "ch");
+
+	TestSession();
 	//TestMysql();
-	TestLibuv();
+	//TestLibuv();
 	//TestLibuv100000();
 	//char* test = new char[1000];
 	//_CrtDumpMemoryLeaks();
+
+	CHLog::Instance()->UninitLog();
 }
