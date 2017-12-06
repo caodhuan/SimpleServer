@@ -58,7 +58,7 @@ namespace CHServer {
 				break;
 			}
 
-			if (!ProcessPacket(data + sizeof(m_head), m_head.totalLength - sizeof(m_head))) {
+			if (!ProcessData(data + sizeof(m_head), m_head.totalLength - sizeof(m_head))) {
 				// 关闭连接，打日志
 				m_socket->Close();
 			}
@@ -73,6 +73,27 @@ namespace CHServer {
 
 		delete m_socket;
 		m_socket = nullptr;
+
+		OnSessionDisconnect();
+	}
+
+	bool Session::ProcessData(const char* data, uint16_t len) {
+		const int32_t test = 1;
+		switch (m_head.cmd) {
+
+		case test:
+		{
+				  static PlayerInfo msg;
+				  if (!msg.ParsePartialFromArray(data, len)) {
+					  return false;
+				  }
+				  CHDEBUGLOG(msg.DebugString().c_str());
+		}
+			break;
+		default:
+			// 派发到子类
+			return ProcessPacket(data, len);
+		}
 	}
 
 	void Session::Close() {
@@ -87,17 +108,11 @@ namespace CHServer {
 	}
 
 	bool Session::ProcessPacket(const char* data, uint16_t len) {
-		switch (m_head.cmd) {
-
-		default:
-			static PlayerInfo msg;
-			if (!msg.ParsePartialFromArray(data, len)) {
-				return false;
-			}
-			CHDEBUGLOG(msg.DebugString().c_str());
-			break;
-		}
 		return true;
+	}
+
+	void Session::OnSessionDisconnect() {
+
 	}
 
 	void Session::Send(const char* data, uint16_t len) {

@@ -58,6 +58,8 @@ namespace CHServer {
 	public:
 
 		virtual bool ProcessPacket(const char* data, uint16_t len);
+
+		virtual void OnSessionDisconnect();
 	private:
 
 		void OnConnected();
@@ -66,6 +68,8 @@ namespace CHServer {
 		void OnReceive();
 
 		void OnClosed();
+
+		bool ProcessData(const char* data, uint16_t len);
 
 		void Send(const char* data, uint16_t len);
 	private:
