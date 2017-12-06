@@ -15,6 +15,7 @@ public:
 	virtual void AfterFinalize() override;
 
 	virtual Session* CreateSession(SocketBase* socket) override;
+
 public:
 	void AddSession(Session* session);
 

@@ -145,9 +145,7 @@ void TestSession() {
 		serve->SendPacket(1, data.c_str(), data.size());
 	}, nullptr, nullptr);
 
-
 	tcp->Connect("127.0.0.1", 2345);
-
 
 	dispatcher->Run();
 }

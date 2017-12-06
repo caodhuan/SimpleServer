@@ -79,11 +79,12 @@ namespace CHServer {
 
 		case test:
 		{
-				  static PlayerInfo msg;
-				  if (!msg.ParsePartialFromArray(data, len)) {
-					  return false;
-				  }
-				  CHDEBUGLOG(msg.DebugString().c_str());
+			static PlayerInfo msg;
+			if (!msg.ParsePartialFromArray(data, len)) {
+				return false;
+			}
+			CHDEBUGLOG(msg.DebugString().c_str());
+			return true;
 		}
 			break;
 		default:
