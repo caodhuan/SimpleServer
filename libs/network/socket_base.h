@@ -5,7 +5,7 @@
 #include <vector>
 #include <functional>
 #include <stdint.h>
-
+#include <string>
 #include "buffer.h"
 
 namespace CHServer {
@@ -22,10 +22,11 @@ namespace CHServer {
 	public:
 		virtual uv_handle_t* GetHandle() = 0;
 		virtual void Close() = 0;
-
+		virtual std::string GetIP() = 0;
+		virtual int32_t GetPort() = 0;
 	public:
-		void SetCallback(SocketCallback connected, SocketCallback received);
-		bool IsClose();
+		void SetCallback(SocketCallback connected, SocketCallback received, SocketCallback closed);
+		bool IsClosed();
 
 		void Send(const char* data, uint16_t len);
 
@@ -58,6 +59,7 @@ namespace CHServer {
 		enum {
 			CONNECTED = 0,
 			RECEIVED = 1,
+			CLOSED = 2,
 			MAX,
 		};
 		static const int32_t SendBuffCount = 2;

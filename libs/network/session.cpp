@@ -1,6 +1,8 @@
 #include "session.h"
 #include "socket_tcp.h"
 #include "commonprotobuf.h"
+#include <functional>
+#include "log.h"
 
 namespace CHServer {
 
@@ -11,6 +13,14 @@ namespace CHServer {
 	}
 
 	Session::~Session() {
+
+	}
+
+	void Session::InitSession() {
+		m_socket->SetCallback(std::bind(&Session::OnConnected, this), std::bind(&Session::OnReceive, this), std::bind(&Session::OnClosed, this));
+	}
+
+	void Session::OnConnected() {
 
 	}
 
@@ -27,6 +37,7 @@ namespace CHServer {
 	}
 
 	void Session::OnReceive() {
+		CHERRORLOG("received");
 		while (true) {
 			int32_t dataLen = m_socket->GetDataLength();
 
@@ -54,6 +65,24 @@ namespace CHServer {
 			m_socket->RemoveBuff(m_head.totalLength);
 			m_head.totalLength = 0;
 		}
+	}
+
+	void Session::OnClosed() {
+		CHDEBUGLOG("session closed!");
+
+		delete m_socket;
+		m_socket = nullptr;
+	}
+
+	void Session::Close() {
+		if (m_socket) {
+			m_socket->Close();
+		}
+
+	}
+
+	bool Session::IsClosed() {
+		return m_socket ? m_socket->IsClosed() : true;
 	}
 
 	bool Session::ProcessPacket(const char* data, uint16_t len) {

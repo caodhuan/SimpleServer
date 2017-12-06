@@ -8,7 +8,7 @@ include(cmake/libs.cmake)
 
 add_executable(MyTest ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
 
-add_executable(MyServerTest ${CMAKE_CURRENT_SOURCE_DIR}/src/server.cpp)
+add_executable(MyServerTest ${CMAKE_CURRENT_SOURCE_DIR}/src/server.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/my_server.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/my_server.h)
 
 add_executable(MyRedisTest ${CMAKE_CURRENT_SOURCE_DIR}/src/redis_test.cpp)
 
@@ -60,15 +60,15 @@ include_directories(
 	3rd/libuv/src)
 
 
-target_link_libraries(network libuv common) 
+target_link_libraries(network libuv common protos) 
 
 target_link_libraries(db hiredis) 
 
-target_link_libraries(MyTest network db common libprotobuf) 
+target_link_libraries(MyTest network db common libprotobuf server) 
 
-target_link_libraries(MyServerTest network db common libprotobuf) 
+target_link_libraries(MyServerTest network db common libprotobuf server) 
 
-target_link_libraries(MyRedisTest network  db common libprotobuf) 
+target_link_libraries(MyRedisTest network  db common libprotobuf server) 
 
 
 if(UNIX)

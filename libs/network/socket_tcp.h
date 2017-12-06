@@ -1,4 +1,6 @@
 #pragma once
+#include <string>
+
 #include "socket_base.h"
 
 namespace CHServer {
@@ -14,9 +16,15 @@ namespace CHServer {
 
 		void Close() override;
 
+		std::string GetIP() override;
+		
+		int32_t GetPort()  override;
+
 		void Connect(const char* ip, int32_t port);
 
 		void Listen(const char* ip, int32_t port);
+
+		SocketTCP* Accept();
 	public:
 		void SetNodely(bool enable);
 

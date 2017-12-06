@@ -42,21 +42,31 @@ namespace CHServer {
 		virtual ~Session();
 
 	public:
+
+		void InitSession();
+
 		// 发送数据
 		void SendPacket(uint16_t cmd, const char* data, uint16_t len);
-
-		// 处理接收数据
-		void OnReceive();
 
 		SocketBase* GetSocket() {
 			return m_socket;
 		}
 
+		void Close();
 
+		bool IsClosed();
 	public:
 
 		virtual bool ProcessPacket(const char* data, uint16_t len);
 	private:
+
+		void OnConnected();
+
+		// 处理接收数据
+		void OnReceive();
+
+		void OnClosed();
+
 		void Send(const char* data, uint16_t len);
 	private:
 		SocketBase* m_socket;

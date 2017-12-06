@@ -5,6 +5,7 @@
 namespace CHServer {
 	class EventDispatcher;
 	class Session;
+	class SocketTCP;
 
 	// 一个服务器进程抽象
 	class ServerBase {
@@ -20,9 +21,12 @@ namespace CHServer {
 		void Finalize();
 		virtual void AfterFinalize() = 0;
 
+		void Run();
 	private:
 		EventDispatcher* m_dispatcher;
 
 		std::set<Session*> m_sessions;
+
+		SocketTCP* m_Server;
 	};
 }

@@ -53,6 +53,7 @@ void TestLibuv() {
 	client->SetCallback([&] {
 
 		client->Send(msg, sizeof(msg));
+		//client->Close();
 	}, [&]()-> void {
 		int len = client->GetDataLength();
 		char* ptr = NULL;
@@ -77,11 +78,12 @@ void TestLibuv() {
 				//std::cout << str.c_str();
 
 		client->Send(str.c_str(), str.size());
-	});
+	}, nullptr);
 
-	client->Connect("139.199.199.121", 2345);
-	//client->Connect("127.0.0.1", 2345);
+	//client->Connect("139.199.199.121", 2345);
+	client->Connect("127.0.0.1", 2345);
 	dispatcher->Run();
+	
 	CHLog::Instance()->UninitLog();
 }
 
@@ -140,9 +142,9 @@ int main() {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
 #endif
-	TestMysql();
-
-	TestLibuv100000();
+	//TestMysql();
+	TestLibuv();
+	//TestLibuv100000();
 	//char* test = new char[1000];
 	//_CrtDumpMemoryLeaks();
 }

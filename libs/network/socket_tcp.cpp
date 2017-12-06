@@ -26,7 +26,7 @@ namespace CHServer {
 			delete m_connector;
 			m_connector = NULL;
 		}
-		
+
 	}
 
 	uv_handle_t* SocketTCP::GetHandle() {
@@ -36,6 +36,26 @@ namespace CHServer {
 	void SocketTCP::Close() {
 		uv_close((uv_handle_t*)m_handle, SocketBase::OnClose);
 		m_handle = NULL;
+	}
+
+	std::string SocketTCP::GetIP() {
+		std::string result;
+		sockaddr_in addr;
+		int len = sizeof(addr);
+		char ip[64] = { 0 };
+		uv_tcp_getpeername(m_handle, (sockaddr*)&addr, &len);
+		uv_ip4_name(&addr, (char*)ip, sizeof(addr));
+		result = ip;
+
+		return std::move(result);
+	}
+
+	int32_t SocketTCP::GetPort() {
+		sockaddr_in addr;
+		int len = sizeof(addr);
+		char ip[64] = { 0 };
+		uv_tcp_getpeername(m_handle, (sockaddr*)&addr, &len);
+		return addr.sin_port;
 	}
 
 	void SocketTCP::Connect(const char* ip, int32_t port) {
@@ -70,6 +90,14 @@ namespace CHServer {
 		}
 
 		CHWARNINGLOG("listen on %s, %d", ip, port);
+	}
+
+	SocketTCP* SocketTCP::Accept() {
+		SocketTCP* tcp = new SocketTCP(m_dispatcher);
+		uv_accept((uv_stream_t*)GetHandle(), (uv_stream_t*)tcp->GetHandle());
+		uv_read_start((uv_stream_t*)tcp->GetHandle(), SocketBase::Allocator, SocketBase::OnReceived);
+
+		return tcp;
 	}
 
 	void SocketTCP::SetNodely(bool enable) {

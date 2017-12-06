@@ -31,19 +31,19 @@ namespace CHServer {
 		}
 	}
 
-	void SocketBase::SetCallback(SocketCallback connected, SocketCallback received) {
+	void SocketBase::SetCallback(SocketCallback connected, SocketCallback received, SocketCallback closed) {
 		m_callback[CONNECTED] = connected;
 		m_callback[RECEIVED] = received;
-
+		m_callback[CLOSED] = closed;
 	}
 
-	bool SocketBase::IsClose() {
+	bool SocketBase::IsClosed() {
 		return GetHandle() == NULL;
 	}
 
 	void SocketBase::Send(const char* data, uint16_t len) {
 		AppendSendData(data, len);
-		if (m_isWriting || !IsClose()) {
+		if (m_isWriting || !IsClosed()) {
 			// 已经在发送了，下一次再发
 			return;
 		}
@@ -99,7 +99,7 @@ namespace CHServer {
 			初始化一个tcp
 			然后 accept
 			uv_accept
-		*/
+			*/
 	}
 
 	void SocketBase::Allocator(uv_handle_t* handle, size_t suggestedSize, uv_buf_t* buf) {
@@ -149,10 +149,13 @@ namespace CHServer {
 	}
 
 	void SocketBase::OnClose(uv_handle_t* handle) {
-		CHDEBUGLOG("closed!!!");
+		CHDEBUGLOG("SocketBase closed!!!");
 		SocketBase* socket = (SocketBase*)handle->data;
-		delete socket;
-		socket = nullptr;
+		if (socket->m_callback[CLOSED]) {
+			socket->m_callback[CLOSED]();
+		} else {
+			delete socket;
+		}
 		delete handle;
 		handle = NULL;
 
