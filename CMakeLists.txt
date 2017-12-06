@@ -64,11 +64,11 @@ target_link_libraries(network libuv common protos)
 
 target_link_libraries(db hiredis) 
 
-target_link_libraries(MyTest network db common libprotobuf server) 
+target_link_libraries(MyTest network db ) 
 
-target_link_libraries(MyServerTest network db common libprotobuf server) 
+target_link_libraries(MyServerTest server) 
 
-target_link_libraries(MyRedisTest network  db common libprotobuf server) 
+target_link_libraries(MyRedisTest network db libprotobuf) 
 
 
 if(UNIX)

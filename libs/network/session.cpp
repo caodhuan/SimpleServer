@@ -73,8 +73,6 @@ namespace CHServer {
 
 		delete m_socket;
 		m_socket = nullptr;
-
-		ServerBase::Instance()->RemoveSession(this);
 	}
 
 	void Session::Close() {
