@@ -7,8 +7,9 @@
 namespace CHServer {
 	class EventDispatcher;
 	class Session;
+	class SocketBase;
 	class SocketTCP;
-
+	
 	// 一个服务器进程抽象
 	class ServerBase : public SingletonInheritable<ServerBase> {
 	public:
@@ -26,13 +27,10 @@ namespace CHServer {
 
 		void Run();
 
-	public:
-		void RemoveSession(Session* session);
+		virtual Session* CreateSession(SocketBase* socket) = 0;
 
 	private:
 		EventDispatcher* m_dispatcher;
-
-		std::set<Session*> m_sessions;
 
 		SocketTCP* m_Server;
 	};

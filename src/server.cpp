@@ -10,11 +10,9 @@
 
 using namespace CHServer;
 int main() {
-	CHLog::Instance()->InitLog(".", "server");
+	
 
 	MyServer::Instance()->Initilize();
 
 	MyServer::Instance()->Run();
-
-	CHLog::Instance()->UninitLog();
 }

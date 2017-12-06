@@ -11,15 +11,11 @@ namespace CHServer {
 	Session::Session(SocketBase* socket)
 		: m_socket(socket)
 		, m_head() {
-
+		m_socket->SetCallback(std::bind(&Session::OnConnected, this), std::bind(&Session::OnReceive, this), std::bind(&Session::OnClosed, this));
 	}
 
 	Session::~Session() {
 
-	}
-
-	void Session::InitSession() {
-		m_socket->SetCallback(std::bind(&Session::OnConnected, this), std::bind(&Session::OnReceive, this), std::bind(&Session::OnClosed, this));
 	}
 
 	void Session::OnConnected() {

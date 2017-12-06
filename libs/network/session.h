@@ -43,8 +43,6 @@ namespace CHServer {
 
 	public:
 
-		void InitSession();
-
 		// 发送数据
 		void SendPacket(uint16_t cmd, const char* data, uint16_t len);
 

@@ -38,11 +38,7 @@ namespace CHServer {
 		m_Server->SetCallback(nullptr, [&] {
 			SocketTCP* tcpClient = m_Server->Accept();
 			
-			Session* session = new Session(tcpClient);
-
-			session->InitSession();
-
-			m_sessions.insert(session);
+			Session* session = CreateSession(tcpClient);
 
 			CHDEBUGLOG("new client connected %s:%d", tcpClient->GetIP().c_str(), tcpClient->GetPort());
 		}, 
@@ -59,11 +55,6 @@ namespace CHServer {
 		
 		BeforeFinalize();
 
-		for (auto item : m_sessions) {
-			delete item;
-		}
-		m_sessions.clear();
-
 		if (m_dispatcher) {
 			delete m_dispatcher;
 			m_dispatcher = NULL;
@@ -75,9 +66,4 @@ namespace CHServer {
 	void ServerBase::Run() {
 		m_dispatcher->Run();
 	}
-
-	void ServerBase::RemoveSession(Session* session) {
-		m_sessions.erase(session);
-	}
-
 }

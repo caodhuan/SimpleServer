@@ -1,5 +1,6 @@
 #pragma once
 #include "server_base.h"
+#include <set>
 
 namespace CHServer {
 
@@ -12,6 +13,15 @@ public:
 	virtual void BeforeFinalize() override;
 
 	virtual void AfterFinalize() override;
+
+	virtual Session* CreateSession(SocketBase* socket) override;
+public:
+	void AddSession(Session* session);
+
+	void RemoveSession(Session* session);
+
+private:
+	std::set<Session*> m_sessions;
 };
 
 }
