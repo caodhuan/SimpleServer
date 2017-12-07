@@ -2,7 +2,7 @@
 #include "server_base.h"
 
 namespace CHServer {
-	class ConnectorServer : ServerBase {
+	class ConnectorServer : public ServerBase {
 
 	public:
 		virtual bool BeforeInitilize() override;

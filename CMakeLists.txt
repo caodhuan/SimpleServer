@@ -18,8 +18,6 @@ endgroup()
 
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -std=c++11 -g")
-target_link_libraries(client_test libuv)
-target_link_libraries(server_test libuv)
 
 if(WIN32)
 	set(lib_path ${CMAKE_CURRENT_SOURCE_DIR}/3rd/mysql/win)
@@ -66,11 +64,7 @@ include_directories(
 	3rd/libuv/src)
 
 
-target_link_libraries(network libuv common protos) 
-
-target_link_libraries(db hiredis) 
-
-target_link_libraries(client_test network db ) 
+target_link_libraries(client_test server) 
 
 target_link_libraries(server_test server) 
 
