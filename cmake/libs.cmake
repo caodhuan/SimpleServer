@@ -61,9 +61,10 @@ group(base)
 	addlib(protos ${CMAKE_CURRENT_SOURCE_DIR}/libs/protos)
 	addlib(server ${CMAKE_CURRENT_SOURCE_DIR}/libs/server)
 
+
+	target_link_libraries(network libuv) 
 	target_link_libraries(protos libprotobuf) 
 	target_link_libraries(server network protos db common) 
-	
 endgroup()
 
 # 增加custom build

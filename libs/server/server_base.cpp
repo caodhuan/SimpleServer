@@ -17,7 +17,6 @@ namespace CHServer {
 	}
 
 	ServerBase::~ServerBase() {
-
 	}
 
 	bool ServerBase::Initilize() {
@@ -31,20 +30,22 @@ namespace CHServer {
 		}
 
 		m_dispatcher = new EventDispatcher();
-		
+
 		// 先手写吧，后面写一个配置模块
 		m_Server = new SocketTCP(m_dispatcher);
-		
-		m_Server->SetCallback(nullptr, [&] {
+
+		m_Server->SetCallback(nullptr, [this] {
 			SocketTCP* tcpClient = m_Server->Accept();
-			
+
 			Session* session = CreateSession(tcpClient);
 
 			CHDEBUGLOG("new client connected %s:%d", tcpClient->GetIP().c_str(), tcpClient->GetPort());
-		}, 
-			[&] {
-			delete m_Server;
+		},
+			[this] {
+			// 这里目前没搞清楚为啥delete后，会造成this变量变得不可访问。
+			SocketBase* tmp = m_Server;
 			m_Server = nullptr;
+			delete tmp;
 		});
 		m_Server->Listen("0.0.0.0", 2345);
 
@@ -52,7 +53,7 @@ namespace CHServer {
 	}
 
 	void ServerBase::Finalize() {
-		
+
 		BeforeFinalize();
 
 		if (m_dispatcher) {

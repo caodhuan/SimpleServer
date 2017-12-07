@@ -53,7 +53,7 @@ namespace CHServer {
 
 		static void OnConnected(uv_connect_t* handle, int status);
 
-		static void OnClose(uv_handle_t* handle);
+		static void OnClosed(uv_handle_t* handle);
 
 	protected:
 		enum {

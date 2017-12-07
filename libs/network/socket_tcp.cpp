@@ -34,7 +34,7 @@ namespace CHServer {
 	}
 
 	void SocketTCP::Close() {
-		uv_close((uv_handle_t*)m_handle, SocketBase::OnClose);
+		uv_close((uv_handle_t*)m_handle, SocketBase::OnClosed);
 		m_handle = NULL;
 	}
 
@@ -86,6 +86,7 @@ namespace CHServer {
 
 		if (result) {
 			CHERRORLOG("listen error");
+			Close();
 			return;
 		}
 

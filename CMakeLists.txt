@@ -5,15 +5,16 @@ project(CHServer)
 include(cmake/macros.cmake)
 include(cmake/3rd.cmake)
 include(cmake/libs.cmake)
+include(cmake/servers.cmake)
 
-add_executable(client_test ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
 
-add_executable(server_test ${CMAKE_CURRENT_SOURCE_DIR}/src/server.cpp 
-				${CMAKE_CURRENT_SOURCE_DIR}/src/my_server.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/my_server.h
-				${CMAKE_CURRENT_SOURCE_DIR}/src/player_session.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/player_session.h
-				)
+group(test)
+	addexec(client_test ${CMAKE_CURRENT_SOURCE_DIR}/src/test/client_test)
 
-add_executable(redis_test ${CMAKE_CURRENT_SOURCE_DIR}/src/redis_test.cpp)
+	addexec(server_test ${CMAKE_CURRENT_SOURCE_DIR}/src/test/server_test)
+
+	addexec(redis_test ${CMAKE_CURRENT_SOURCE_DIR}/src/test/redis_test)
+endgroup()
 
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -std=c++11 -g")
@@ -31,13 +32,13 @@ if(WIN32)
 	file(COPY ${lib_path}/lib/libmysql.dll DESTINATION ${CMAKE_WORKING_DIRECTORY}/)
 	file(COPY ${lib_path}/lib/libmysql.dll DESTINATION ${PROJECT_BINARY_DIR}/Debug)
 
-	target_link_libraries(client_test ${mysqlclient_lib})
+	foreach(project ${group_proj})
+		target_link_libraries(${project} ${mysqlclient_lib})
 
-	target_link_libraries(client_test ws2_32.lib Psapi.lib IPHLPAPI.lib userenv.lib)
+		target_link_libraries(${project} ws2_32.lib Psapi.lib IPHLPAPI.lib userenv.lib)
 
-	target_link_libraries(server_test ws2_32.lib Psapi.lib IPHLPAPI.lib userenv.lib)
-
-	target_link_libraries(redis_test ws2_32.lib Psapi.lib IPHLPAPI.lib userenv.lib)
+	endforeach()
+	
 
 	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/3rd/hiredis/win/hiredis/)
 
@@ -51,7 +52,9 @@ else()
 		file(GLOB mysqlclient_lib ${lib_path}/lib/libmysqlclient.a)
     endif()
 
-	target_link_libraries(client_test ${mysqlclient_lib} pthread dl )
+    foreach(project ${group_proj})
+    	target_link_libraries(${project} ${mysqlclient_lib} pthread dl )
+    endforeach()
 
 	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/3rd/hiredis/linux/hiredis/)
 

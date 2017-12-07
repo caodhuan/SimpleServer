@@ -148,7 +148,7 @@ namespace CHServer {
 		uv_read_start(handle->handle, SocketBase::Allocator, SocketBase::OnReceived);
 	}
 
-	void SocketBase::OnClose(uv_handle_t* handle) {
+	void SocketBase::OnClosed(uv_handle_t* handle) {
 		CHDEBUGLOG("SocketBase closed!!!");
 		SocketBase* socket = (SocketBase*)handle->data;
 
