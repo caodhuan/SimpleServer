@@ -34,18 +34,20 @@ namespace CHServer {
 		// 先手写吧，后面写一个配置模块
 		m_Server = new SocketTCP(m_dispatcher);
 
-		m_Server->SetCallback(nullptr, [this] {
+		m_Server->SetCallback(nullptr, [&] {
 			SocketTCP* tcpClient = m_Server->Accept();
 
 			Session* session = CreateSession(tcpClient);
 
 			CHDEBUGLOG("new client connected %s:%d", tcpClient->GetIP().c_str(), tcpClient->GetPort());
 		},
-			[this] {
+			[&] {
 			// 这里目前没搞清楚为啥delete后，会造成this变量变得不可访问。
 			SocketBase* tmp = m_Server;
 			m_Server = nullptr;
+			CHWARNINGLOG("before delete %ld", this);
 			delete tmp;
+			CHWARNINGLOG("after delete %ld", this);
 		});
 		m_Server->Listen("0.0.0.0", 2345);
 
