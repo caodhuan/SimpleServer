@@ -151,13 +151,14 @@ namespace CHServer {
 	void SocketBase::OnClose(uv_handle_t* handle) {
 		CHDEBUGLOG("SocketBase closed!!!");
 		SocketBase* socket = (SocketBase*)handle->data;
+
+		delete handle;
+		handle = NULL;
+
 		if (socket->m_callback[CLOSED]) {
 			socket->m_callback[CLOSED]();
 		} else {
 			delete socket;
 		}
-		delete handle;
-		handle = NULL;
-
 	}
 }
