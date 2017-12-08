@@ -2,6 +2,8 @@
 #include "session.h"
 #include "player_session.h"
 #include "log.h"
+#include "timer_factory.h"
+#include "timer.h"
 
 namespace CHServer {
 

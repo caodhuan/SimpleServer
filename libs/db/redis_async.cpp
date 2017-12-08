@@ -125,7 +125,7 @@ namespace CHServer {
 		instance->m_poll->data = instance;
 		int fd = context->c.fd;
 #ifdef WIN32
-		fd = RFDMap::getInstance().lookupSocket(context->c.fd);
+		fd = (int32_t)RFDMap::getInstance().lookupSocket(context->c.fd);
 #endif
 		if (uv_poll_init_socket(dispatcher->GetLoop(), instance->m_poll, fd) != 0) {
 			return REDIS_ERR;

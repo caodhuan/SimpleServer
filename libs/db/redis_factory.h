@@ -17,6 +17,9 @@ namespace CHServer {
 		void DeleteRedisSync(RedisSync* redis);
 
 	private:
-
+	
+	protected:
+		RedisFactory() = default;
+		~RedisFactory() = default;
 	};
 }

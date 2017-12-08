@@ -5,6 +5,7 @@
 #include "socket_tcp.h"
 
 #include "uv.h"
+#include "timer_factory.h"
 
 namespace CHServer {
 	template<>
@@ -30,6 +31,8 @@ namespace CHServer {
 		}
 
 		m_dispatcher = new EventDispatcher();
+
+		TimerFactory::Instance()->InitTimerFactory(m_dispatcher);
 
 		// 先手写吧，后面写一个配置模块
 		m_Server = new SocketTCP(m_dispatcher);
