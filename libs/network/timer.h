@@ -13,7 +13,7 @@ namespace CHServer {
 		static const uint64_t FOREVER = 0xffffffff;
 	private:
 		friend class TimerFactory;
-		Timer(uv_timer_t* timer, uint32_t timeout, uint64_t repeatedCount);
+		Timer(uv_timer_t* timer, uint64_t repeatedCount);
 		~Timer();
 
 	private:
@@ -23,7 +23,6 @@ namespace CHServer {
 
 	private:
 		uv_timer_t* m_timer;
-		int32_t m_timeout;
 		uint64_t m_repeatedCount;
 		std::function<void()> m_callback;
 	};

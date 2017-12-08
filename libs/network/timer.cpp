@@ -4,9 +4,8 @@
 // 时间管理
 namespace CHServer {
 
-	Timer::Timer(uv_timer_t* timer, uint32_t timeout, uint64_t repeatedCount)
+	Timer::Timer(uv_timer_t* timer, uint64_t repeatedCount)
 		: m_timer(timer)
-		, m_timeout(timeout)
 		, m_repeatedCount(repeatedCount)
 		, m_callback(nullptr) {
 		m_timer->data = this;
@@ -17,9 +16,18 @@ namespace CHServer {
 	}
 
 	void Timer::OnTimer() {
-		if (m_callback) {
-			m_callback();
-		}
+		if (m_repeatedCount > 0) {
+			--m_repeatedCount;
+	
+			if (m_repeatedCount == 0) {
+				uv_timer_stop(m_timer);
+			}
+
+			if (m_callback) {
+				m_callback();
+			}
+		} 
+
 	}
 
 	void Timer::SetCallback(std::function<void()> callback) {

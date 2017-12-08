@@ -16,19 +16,23 @@ namespace CHServer {
 		uv_timer_t* uvTime = new uv_timer_t;
 		uv_timer_init(m_dispatcher->GetLoop(), uvTime);
 
-		Timer* result = new Timer(uvTime, seconds, repeatCount);
+		Timer* result = new Timer(uvTime, repeatCount);
 
 		result->SetCallback(callback);
 
-		uv_timer_start(uvTime, TimerFactory::OnTimerCallback, seconds, repeatCount);
+		uv_timer_start(uvTime, TimerFactory::OnTimerCallback, seconds, seconds);
 
 		return result;
 	}
 
 	void TimerFactory::DeleteTimer(Timer* timer) {
-		int result = uv_timer_stop(timer->m_timer);
-		if (result != 0) {
-			CHERRORLOG("delete timer error %s", uv_strerror(result));
+		if (uv_is_active((uv_handle_t*)timer->m_timer)) {
+
+			int result = uv_timer_stop(timer->m_timer);
+
+			if (result != 0) {
+				CHERRORLOG("delete timer error %s", uv_strerror(result));
+			}
 		}
 
 		uv_close((uv_handle_t*)timer->m_timer, TimerFactory::OnClose);
