@@ -53,7 +53,6 @@ namespace CHServer {
 	private:
 		redisAsyncContext* m_context;
 
-
 		uv_poll_t* m_poll;
 		int m_events;
 
