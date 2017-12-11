@@ -13,8 +13,11 @@ namespace CHServer {
 			static T instance; // no race condition, after c++11
 			return &instance;
 		}
+
 	protected:
 		Singleton() = default;
+		virtual ~Singleton() = default;
+
 	private:
 		Singleton(const Singleton&) = delete;
 
@@ -31,6 +34,8 @@ namespace CHServer {
 			assert(m_Instance == nullptr);
 			m_Instance = static_cast<T*>(this);
 		}
+
+		virtual ~SingletonInheritable() = default;
 
 	public:
 		static T* Instance() {

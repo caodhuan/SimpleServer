@@ -20,12 +20,10 @@ namespace CHServer {
 
 	private:
 		static void OnTimerCallback(uv_timer_t* handle);
+
 		static void OnClose(uv_handle_t* handle);
+
 	private:
 		EventDispatcher* m_dispatcher;
-
-	protected:
-		TimerFactory() = default;
-		~TimerFactory() = default;
 	};
 }

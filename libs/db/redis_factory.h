@@ -10,16 +10,12 @@ namespace CHServer {
 	// 干脆做个统一的工厂方法了
 	class RedisFactory : public Singleton<RedisFactory> {
 	public:
+
 		RedisAsync* CreateRedisAsync();
 		RedisSync* CreateRedisSync();
 
 		void DeleteRedisAsync(RedisAsync* redis);
 		void DeleteRedisSync(RedisSync* redis);
-
-	private:
-	
-	protected:
-		RedisFactory() = default;
-		~RedisFactory() = default;
+		
 	};
 }
