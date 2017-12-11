@@ -1,6 +1,6 @@
-syntax = "proto2";
+syntax = "proto3";
 
 
 message PlayerInfo {
-	optional string name = 1;
+	string name = 1;
 }
