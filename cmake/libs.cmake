@@ -60,9 +60,9 @@ group(base)
 	addlib(db ${CMAKE_CURRENT_SOURCE_DIR}/libs/db)
 	addlib(protos ${CMAKE_CURRENT_SOURCE_DIR}/libs/protos)
 	addlib(server ${CMAKE_CURRENT_SOURCE_DIR}/libs/server)
+	addlib(resource ${CMAKE_CURRENT_SOURCE_DIR}/libs/resource)
 
-
-
+	target_link_libraries(resource lua)
 	target_link_libraries(network libuv common protos) 
 	target_link_libraries(db hiredis) 
 	target_link_libraries(protos libprotobuf) 
