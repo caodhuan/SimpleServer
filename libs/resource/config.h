@@ -13,7 +13,7 @@ namespace CHServer {
 		~Config();
 	private:
 		Config(lua_State* state);
-
+		Config();
 	public:
 		bool ReadInt(const char* name, int& result);
 		
@@ -27,11 +27,14 @@ namespace CHServer {
 
 		void PreparaStack(const char* fieldName);
 		
+		void RecoverStack();
 	private:
 		// 每个配置文件，单独一个虚拟机
 		lua_State* m_state;
 		bool m_haveParent;
 
 		std::vector<std::string> m_tableName;
+
+		int m_stackPos;
 	};
 }

@@ -10,10 +10,10 @@ namespace CHServer {
 
 		return 0;
 	}
+	static int INVALID_STACK_POS = -1;
 
 	Config::Config(const char* path, const char* tableName)
-		: m_state(nullptr)
-		, m_haveParent(false) {
+		: Config() {
 
 		m_state = luaL_newstate();
 
@@ -26,8 +26,15 @@ namespace CHServer {
 	}
 
 	Config::Config(lua_State* state)
-		: m_state(state)
-		, m_haveParent(true) {
+		: Config() {
+		m_state = state;
+		m_haveParent = true;
+	}
+
+	Config::Config()
+		: m_state(nullptr)
+		, m_haveParent(false)
+		, m_stackPos(INVALID_STACK_POS) {
 
 	}
 
@@ -45,6 +52,8 @@ namespace CHServer {
 		}
 
 		result = lua_tointeger(m_state, -1);
+		
+		RecoverStack();
 
 		return true;
 	}
@@ -59,6 +68,9 @@ namespace CHServer {
 		size_t size = 0;
 		const char* str = lua_tolstring(m_state, -1, &size);
 		result.assign(str, size);
+
+		RecoverStack();
+
 		return true;
 	}
 
@@ -67,10 +79,12 @@ namespace CHServer {
 		if (!lua_istable(m_state, -1)) {
 			return nullptr;
 		}
-
+		
 		Config *config = new Config(m_state);
 
 		config->AddTableName(name);
+
+		RecoverStack();
 
 		return config;
 	}
@@ -80,6 +94,8 @@ namespace CHServer {
 	}
 
 	void Config::PreparaStack(const char* fieldName) {
+		m_stackPos = lua_gettop(m_state);
+
 		lua_getglobal(m_state, m_tableName[0].c_str());
 
 		int32_t deepth = m_tableName.size();
@@ -92,6 +108,14 @@ namespace CHServer {
 
 		lua_pushstring(m_state, fieldName);
 		lua_rawget(m_state, -2);
+	}
+
+	void Config::RecoverStack() {
+		if (m_stackPos != INVALID_STACK_POS) {
+			lua_pop(m_state, lua_gettop(m_state) - m_stackPos);
+		}
+		
+		m_stackPos = INVALID_STACK_POS;
 	}
 
 }
