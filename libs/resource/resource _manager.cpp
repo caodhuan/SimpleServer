@@ -2,4 +2,13 @@
 
 namespace CHServer {
 
+	ResourceManager::ResourceManager()
+		: m_config(NULL) {
+
+	}
+
+	ResourceManager::~ResourceManager() {
+
+	}
+
 }
