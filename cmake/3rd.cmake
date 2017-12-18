@@ -33,6 +33,12 @@ foreach(files lapi.c lcode.c lctype.c ldebug.c ldo.c ldump.c lfunc.c lgc.c llex.
 	list(APPEND libluafilesrc "${CMAKE_CURRENT_SOURCE_DIR}/3rd/lua/src/${files}")
 endforeach()
 
+if(WIN32) 
+	set(CMAKE_C_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi /Od /Oy- /MT")
+	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Zi /Od /Oy- /MTd")	
+endif()
+
+
 add_library(lua ${libluafilesrc})
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/3rd/lua/src/)

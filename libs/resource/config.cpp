@@ -47,6 +47,7 @@ namespace CHServer {
 
 	bool Config::ReadInt(const char* name, int& result) {
 		PreparaStack(name);
+
 		if (!lua_isinteger(m_state, -1)) {
 			return false;
 		}

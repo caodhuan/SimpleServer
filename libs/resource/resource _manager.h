@@ -9,7 +9,10 @@ namespace CHServer {
 		ResourceManager();
 		~ResourceManager();
 	
+	public:
+		bool Initialize();
 
+		void Finalize();
 	private:
 		Config* m_config;
 	};

@@ -9,7 +9,7 @@ namespace CHServer {
 	// TODO: 索引表该如何读出？
 	class Config {
 	public:
-		Config(const char* path, const char* tableName);
+		Config(const char* path, const char* tableName = "tConfig");
 		~Config();
 	private:
 		Config(lua_State* state);

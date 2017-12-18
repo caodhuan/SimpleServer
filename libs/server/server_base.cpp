@@ -6,6 +6,7 @@
 
 #include "uv.h"
 #include "timer_factory.h"
+#include "resource _manager.h"
 
 namespace CHServer {
 	template<>
@@ -27,6 +28,12 @@ namespace CHServer {
 
 		if (m_dispatcher) {
 			CHERRORLOG("reinitilzed");
+			return false;
+		}
+
+		// 初始化脚本的搜索路径之类的
+		if (!ResourceManager::Instance()->Initialize()) {
+			CHERRORLOG("resource initialize failed!");
 			return false;
 		}
 
