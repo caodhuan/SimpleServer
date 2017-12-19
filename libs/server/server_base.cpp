@@ -7,6 +7,7 @@
 #include "uv.h"
 #include "timer_factory.h"
 #include "resource _manager.h"
+#include "config.h"
 
 namespace CHServer {
 	template<>
@@ -21,7 +22,7 @@ namespace CHServer {
 	ServerBase::~ServerBase() {
 	}
 
-	bool ServerBase::Initilize() {
+	bool ServerBase::Initilize(const char* path, const char* tableName) {
 		if (!BeforeInitilize()) {
 			return false;
 		}
@@ -32,8 +33,17 @@ namespace CHServer {
 		}
 
 		// 初始化脚本的搜索路径之类的
-		if (!ResourceManager::Instance()->Initialize()) {
+		if (!ResourceManager::Instance()->Initialize(path, tableName)) {
 			CHERRORLOG("resource initialize failed!");
+			return false;
+		}
+
+		Config* config = ResourceManager::Instance()->GetConfig();
+		std::string logPath, logFileName;
+		if (config->ReadString("sLogPath", logPath) && config->ReadString("sLogFileName", logFileName)) {
+			CHLog::Instance()->InitLog(logPath.c_str(), logFileName.c_str());
+		} else {
+			CHERRORLOG("log initialize failed!");
 			return false;
 		}
 
@@ -74,6 +84,8 @@ namespace CHServer {
 		}
 
 		AfterFinalize();
+
+		CHLog::Instance()->UninitLog();
 	}
 
 	void ServerBase::Run() {

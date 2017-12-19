@@ -10,8 +10,6 @@ namespace CHServer {
 	static MyServer server;
 
 	bool MyServer::BeforeInitilize() {
-		CHLog::Instance()->InitLog(".", "server");
-
 		return true;
 	}
 
@@ -23,7 +21,6 @@ namespace CHServer {
 	}
 
 	void MyServer::AfterFinalize() {
-		CHLog::Instance()->UninitLog();
 	}
 
 	Session* MyServer::CreateSession(SocketBase* socket) {

@@ -25,6 +25,10 @@ macro(addexec name path)
 	set(group_proj ${group_proj} ${name})
 	include_directories(${path})
 	add2group(${name})
+
+	file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/res DESTINATION ${CMAKE_WORKING_DIRECTORY}/)
+	file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/res DESTINATION ${PROJECT_BINARY_DIR}/Debug)
+	file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/res DESTINATION ${PROJECT_BINARY_DIR}/Release)
 endmacro()
 
 

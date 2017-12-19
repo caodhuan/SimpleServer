@@ -38,6 +38,16 @@ namespace CHServer {
 
 	}
 
+	bool Config::Valid() {
+		PreparaStack(nullptr);
+
+		bool result = lua_istable(m_state, -1);
+		
+		RecoverStack();
+
+		return result;
+	}
+
 	Config::~Config() {
 		if (!m_haveParent && m_state) {
 			lua_close(m_state);
@@ -53,7 +63,7 @@ namespace CHServer {
 		}
 
 		result = lua_tointeger(m_state, -1);
-		
+
 		RecoverStack();
 
 		return true;
@@ -80,7 +90,7 @@ namespace CHServer {
 		if (!lua_istable(m_state, -1)) {
 			return nullptr;
 		}
-		
+
 		Config *config = new Config(m_state);
 
 		config->AddTableName(name);
@@ -106,16 +116,18 @@ namespace CHServer {
 				lua_rawget(m_state, -2);
 			}
 		}
+		if (fieldName) {
+			lua_pushstring(m_state, fieldName);
+			lua_rawget(m_state, -2);
+		}
 
-		lua_pushstring(m_state, fieldName);
-		lua_rawget(m_state, -2);
 	}
 
 	void Config::RecoverStack() {
 		if (m_stackPos != INVALID_STACK_POS) {
 			lua_pop(m_state, lua_gettop(m_state) - m_stackPos);
 		}
-		
+
 		m_stackPos = INVALID_STACK_POS;
 	}
 

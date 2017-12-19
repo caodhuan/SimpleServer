@@ -179,7 +179,7 @@ namespace CHServer {
 
 		m_logData.Put(log);
 
-		if (logLevel == LOGLEVEL_WARNING) {
+		if (logLevel == LOGLEVEL_WARNING || m_fileNamePrefix.empty()) {
 			fprintf(stdout, "%s\n", msgContent);
 		}
 	}

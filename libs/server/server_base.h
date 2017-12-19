@@ -18,7 +18,7 @@ namespace CHServer {
 	
 	public:
 		virtual bool BeforeInitilize() = 0;
-		bool Initilize();
+		bool Initilize(const char* path = nullptr, const char* tableName = nullptr);
 		virtual bool AfterInitilize() = 0;
 
 		virtual void BeforeFinalize() = 0;

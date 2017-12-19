@@ -10,9 +10,11 @@ namespace CHServer {
 		~ResourceManager();
 	
 	public:
-		bool Initialize();
+		bool Initialize(const char* path = nullptr, const char* tableName = nullptr);
 
 		void Finalize();
+
+		Config* GetConfig() { return m_config; }
 	private:
 		Config* m_config;
 	};

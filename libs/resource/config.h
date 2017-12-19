@@ -11,9 +11,13 @@ namespace CHServer {
 	public:
 		Config(const char* path, const char* tableName = "tConfig");
 		~Config();
+
+		bool Valid();
+
 	private:
 		Config(lua_State* state);
 		Config();
+
 	public:
 		bool ReadInt(const char* name, int& result);
 		

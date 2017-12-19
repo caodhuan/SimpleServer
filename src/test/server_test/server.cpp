@@ -10,11 +10,11 @@
 
 using namespace CHServer;
 int main() {
-	
 
-	MyServer::Instance()->Initilize();
 
-	MyServer::Instance()->Run();
+	if (MyServer::Instance()->Initilize("./res/config.lua", "tServer")) {
+		MyServer::Instance()->Run();
+	}
 
 	MyServer::Instance()->Finalize();
 }
