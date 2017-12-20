@@ -4,8 +4,11 @@ using namespace CHServer;
 
 int main() {
 
-	DBServer::Instance()->Initilize();
-	DBServer::Instance()->Run();
+	if (DBServer::Instance()->Initilize()) {
+		DBServer::Instance()->Run();
+	}
+
 	DBServer::Instance()->Finalize();
+
 	return 0;
 }

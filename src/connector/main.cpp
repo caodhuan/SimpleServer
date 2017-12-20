@@ -4,9 +4,9 @@ using namespace CHServer;
 
 int main() {
 
-	ConnectorServer::Instance()->Initilize();
-
-	ConnectorServer::Instance()->Run();
+	if (ConnectorServer::Instance()->Initilize()) {
+		ConnectorServer::Instance()->Run();
+	}
 
 	ConnectorServer::Instance()->Finalize();
 

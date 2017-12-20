@@ -44,15 +44,14 @@ source_group(GeneratedFiles FILES ${GENERATEDSRC} ${GENERATEDHEAD} )
 source_group(protos FILES ${PROTO} )
 
 
-if(EXISTS ${GENERATEDHEAD})
-	file(WRITE ${COMMONPROTOBUFHEADER} "#pragma once\n")
+file(WRITE ${COMMONPROTOBUFHEADER} "#pragma once\n")
 
-	foreach(files ${GENERATEDHEAD})
+foreach(files ${GENERATEDHEAD})
 
-		string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/" "" ONEHREAD ${files} )
-		file(APPEND ${COMMONPROTOBUFHEADER} "#include \"${ONEHREAD}\"\n")
-	endforeach()
-endif()
+	string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/" "" ONEHREAD ${files} )
+	file(APPEND ${COMMONPROTOBUFHEADER} "#include \"${ONEHREAD}\"\n")
+endforeach()
+
 
 group(base)
 	addlib(common ${CMAKE_CURRENT_SOURCE_DIR}/libs/common)

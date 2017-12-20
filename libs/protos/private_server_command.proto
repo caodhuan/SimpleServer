@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package CHServer;
+
+enum PRIAVTE_SERVER_COMMAND {
+	UNKNOW = 0;
+
+	UPDATE_SERVER_INFO = 1;
+
+	QUERY_SERVER_INFO = 2;
+	QUERY_SERVER_INFO_RETURN = 3;
+}
+
+
+message CMD_UPDATE_SERVER_INFO {
+	
+}
+
+message CMD_QUERY_SERVER_INFO {
+	
+}
+
+message CMD_QUERY_SERVER_INFO_RETURN {
+	
+}
+

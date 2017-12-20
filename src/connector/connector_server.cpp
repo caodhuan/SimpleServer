@@ -3,10 +3,12 @@
 namespace CHServer {
 	static ConnectorServer server;
 	bool ConnectorServer::BeforeInitilize() {
+
 		return true;
 	}
 
 	bool ConnectorServer::AfterInitilize() {
+
 		return true;
 	}
 

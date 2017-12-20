@@ -7,6 +7,7 @@ namespace CHServer {
 	// 读取服务器配置
 	// 一个Config代表一组配置，每组配置用table来表示
 	// TODO: 索引表该如何读出？
+	// 需要搞一个圈套的字段配置，如果配置表里没有给出，就弄一个默认的值
 	class Config {
 	public:
 		Config(const char* path, const char* tableName = "tConfig");
