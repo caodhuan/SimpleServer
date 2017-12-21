@@ -40,7 +40,7 @@ namespace CHServer {
 
 		Config* config = ResourceManager::Instance()->GetConfig();
 		std::string logPath, logFileName;
-		if (config->ReadString("sLogPath", logPath) && config->ReadString("sLogFileName", logFileName)) {
+		if (config && config->ReadString("sLogPath", logPath) && config->ReadString("sLogFileName", logFileName)) {
 			CHLog::Instance()->InitLog(logPath.c_str(), logFileName.c_str());
 		} else {
 			CHERRORLOG("log initialize failed!");
@@ -65,10 +65,14 @@ namespace CHServer {
 			// 这里目前没搞清楚为啥delete后，会造成this变量变得不可访问。
 			SocketBase* tmp = m_Server;
 			m_Server = nullptr;
+
 			CHWARNINGLOG("before delete %ld", this);
+
 			delete tmp;
+
 			CHWARNINGLOG("after delete %ld", this);
 		});
+
 		m_Server->Listen("0.0.0.0", 2345);
 
 		return AfterInitilize();
