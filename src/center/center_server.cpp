@@ -1,5 +1,5 @@
 #include "center_server.h"
-#include "session.h"
+#include "server_session.h"
 
 namespace CHServer {
 
@@ -22,7 +22,7 @@ namespace CHServer {
 	}
 
 	CHServer::Session* CenterServer::CreateSession(SocketBase* socket) {
-		return new Session(socket);
+		return new ServerSession(socket);
 	}
 
 }

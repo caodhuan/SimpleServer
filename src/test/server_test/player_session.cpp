@@ -15,6 +15,11 @@ namespace CHServer {
 
 	bool SessionPlayer::ProcessPacket(const char* data, uint16_t len) {
 		CHDEBUGLOG("SessionPlayer::ProcessPacket");
+		switch (m_head.cmd) {
+
+		default:
+			break;
+		}
 		return true;
 	}
 

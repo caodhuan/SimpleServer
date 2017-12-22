@@ -70,9 +70,9 @@ namespace CHServer {
 		bool ProcessData(const char* data, uint16_t len);
 
 		void Send(const char* data, uint16_t len);
-	private:
-		SocketBase* m_socket;
 
+	protected:
+		SocketBase* m_socket;
 		PacketHeader m_head; // 包头
 	};
 }

@@ -12,8 +12,11 @@ tServer = {
 	-- 最大socket缓冲
 	nMaxSocketBuffSize = 65536,
 
-}
+	tConnectorConfig = {
+		
+	},
 
-tConnectorConfig = {
-	
+	tCenterServerConfig = {
+
+	},
 }
