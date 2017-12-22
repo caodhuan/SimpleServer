@@ -17,7 +17,7 @@ namespace CHServer {
 	bool ServerSession::ProcessPacket(const char* data, uint16_t len) {
 		switch (m_head.cmd) {
 		case UNKNOW:
-			CHERRORLOG("unknow command %s", m_socket->GetIP());
+			CHERRORLOG("unknow command %s", m_socket->GetIP().c_str());
 			return false;
 		case REGISTER_SERVER:
 			{
