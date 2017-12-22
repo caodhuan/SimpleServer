@@ -14,6 +14,11 @@ namespace CHServer {
 	}
 
 	bool MyServer::AfterInitilize() {
+
+		TimerFactory::Instance()->AddTimer([] {
+			CHWARNINGLOG("test message");
+		}, 10, 0xffffffff);
+
 		return true;
 	}
 

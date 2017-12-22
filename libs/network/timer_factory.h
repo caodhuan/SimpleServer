@@ -18,6 +18,7 @@ namespace CHServer {
 
 		void DeleteTimer(Timer* timer);
 
+		// TODO: 在这里将每个Timer都管理起来，退出后，全都终结掉
 	private:
 		static void OnTimerCallback(uv_timer_t* handle);
 

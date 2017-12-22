@@ -51,7 +51,6 @@ namespace CHServer {
 
 		TimerFactory::Instance()->InitTimerFactory(m_dispatcher);
 
-		// 先手写吧，后面写一个配置模块
 		m_Server = new SocketTCP(m_dispatcher);
 
 		m_Server->SetCallback(nullptr, [&] {
@@ -73,7 +72,20 @@ namespace CHServer {
 			CHWARNINGLOG("after delete %ld", this);
 		});
 
-		m_Server->Listen("0.0.0.0", 2345);
+		int32_t internalPort;
+		std::string internalIP;
+
+		if (!config->ReadInt("sInternalPort", internalPort)) {
+			CHERRORLOG("read internal port failed!");
+			return false;
+		}
+
+		if (!config->ReadString("sInternalIP", internalIP)) {
+			CHERRORLOG("read internal ip failed!");
+			return false;
+		}
+
+		m_Server->Listen(internalIP.c_str(), internalPort);
 
 		return AfterInitilize();
 	}

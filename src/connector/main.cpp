@@ -4,7 +4,7 @@ using namespace CHServer;
 
 int main() {
 
-	if (ConnectorServer::Instance()->Initilize()) {
+	if (ConnectorServer::Instance()->Initilize("./res/config.lua", "tServer")) {
 		ConnectorServer::Instance()->Run();
 	}
 

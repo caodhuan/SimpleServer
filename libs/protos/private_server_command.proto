@@ -5,22 +5,53 @@ package CHServer;
 enum PRIAVTE_SERVER_COMMAND {
 	UNKNOW = 0;
 
-	UPDATE_SERVER_INFO = 1;
+	// 往cneter_server注册自己
+	REGISTER_SERVER = 1;
+	REGISTER_SERVER_RETURN = 2;
 
-	QUERY_SERVER_INFO = 2;
-	QUERY_SERVER_INFO_RETURN = 3;
+	UPDATE_SERVER_INFO = 3;
+
+	QUERY_SERVER_INFO = 4;
+	QUERY_SERVER_INFO_RETURN = 5;
 }
 
+enum SERVER_TYPE {
+	CONNECTOR = 0;
+	DBSERVER  = 1;
+}
+
+
+message CMD_REGISTER_SERVER {
+	ServerInfo info = 1;
+}
+
+message CMD_REGISTER_SERVER_RETURN {
+	int32 server_id = 1;
+}
 
 message CMD_UPDATE_SERVER_INFO {
 	
 }
 
 message CMD_QUERY_SERVER_INFO {
-	
+	// 通过类型， 或者ID查询
+	// 或者都指定
+	int32 server_type = 1;
+	int32 server_id = 2;
 }
 
 message CMD_QUERY_SERVER_INFO_RETURN {
-	
+	repeated ServerInfo infos = 1;
 }
 
+message ServerInfo {
+	int32 server_type = 1;
+	int32 server_id  = 2; // 注册之前是0，注册之后才有值，ID由center统一分配
+
+	int32 internal_port = 3;
+	string internal_ip = 4;
+	int32 external_port = 5;
+	int32 external_ip = 6;
+
+	// CTODO 负载均衡等信息
+}
