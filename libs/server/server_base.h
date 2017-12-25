@@ -29,6 +29,8 @@ namespace CHServer {
 
 		virtual Session* CreateSession(SocketBase* socket) = 0;
 
+	public:
+		EventDispatcher* GetDispatcher() { return m_dispatcher; }
 	private:
 		EventDispatcher* m_dispatcher;
 

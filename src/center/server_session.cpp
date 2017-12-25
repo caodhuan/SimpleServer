@@ -7,67 +7,50 @@ namespace CHServer {
 
 	ServerSession::ServerSession(SocketBase* socket)
 		: Session(socket) {
-
+		RegisterProcedure(REGISTER_SERVER, std::bind(&ServerSession::OnRegisterServer, this, std::placeholders::_1, std::placeholders::_2) );
+		RegisterProcedure(UPDATE_SERVER_INFO, std::bind(&ServerSession::OnUpdateServerInfo, this, std::placeholders::_1, std::placeholders::_2) );
+		RegisterProcedure(QUERY_SERVER_INFO, std::bind(&ServerSession::OnQueryServerInfo, this, std::placeholders::_1, std::placeholders::_2) );
 	}
 
 	ServerSession::~ServerSession() {
 
 	}
 
-	bool ServerSession::ProcessPacket(const char* data, uint16_t len) {
-		switch (m_head.cmd) {
-		case UNKNOW:
-			CHERRORLOG("unknow command %s", m_socket->GetIP().c_str());
+	void ServerSession::OnSessionDisconnect() {
+		CHWARNINGLOG("OnSessionDisconnect");
+	}
+
+	bool ServerSession::OnRegisterServer(const char* data, uint16_t len) {
+		CHWARNINGLOG("OnRegisterServer");
+
+		static CMD_REGISTER_SERVER req;
+		if (!req.ParseFromArray(data, len)) {
 			return false;
-		case REGISTER_SERVER:
-			{
-				static CMD_REGISTER_SERVER req;
-				if (!req.ParseFromArray(data, len))
-				{
-					return false;
-				}
-				OnRegisterServer(&req);
-			}
-			break;
-		case UPDATE_SERVER_INFO:
-			{
-				static CMD_UPDATE_SERVER_INFO req;
-				if (!req.ParseFromArray(data, len)) {
-					return false;
-				}
-				OnUpdateServerInfo(&req);
-			}
-			break;
-		case QUERY_SERVER_INFO:
-			{
-				static CMD_QUERY_SERVER_INFO req;
-				if (!req.ParseFromArray(data, len)) {
-					return false;
-				}
-				OnQueryServerInfo(&req);
-			}
-			break;
-		default:
-			break;
 		}
 
 		return true;
 	}
 
-	void ServerSession::OnSessionDisconnect() {
-		CHWARNINGLOG("OnSessionDisconnect");
-	}
-
-	void ServerSession::OnRegisterServer(const CMD_REGISTER_SERVER* req) {
-		CHWARNINGLOG("OnRegisterServer");
-	}
-
-	void ServerSession::OnUpdateServerInfo(const CMD_UPDATE_SERVER_INFO* req) {
+	bool ServerSession::OnUpdateServerInfo(const char* data, uint16_t len) {
 		CHWARNINGLOG("OnUpdateServerInfo");
+
+		static CMD_UPDATE_SERVER_INFO req;
+		if (!req.ParseFromArray(data, len)) {
+			return false;
+		}
+
+		return true;
 	}
 
-	void ServerSession::OnQueryServerInfo(const CMD_QUERY_SERVER_INFO* req) {
+	bool ServerSession::OnQueryServerInfo(const char* data, uint16_t len) {
 		CHWARNINGLOG("OnQueryServerInfo");
+
+		static CMD_QUERY_SERVER_INFO req;
+		if (!req.ParseFromArray(data, len)) {
+			return false;
+		}
+
+		return true;
 	}
 
 }

@@ -12,13 +12,13 @@ namespace CHServer {
 		~ServerSession();
 
 	public:
-		virtual bool ProcessPacket(const char* data, uint16_t len) override;
+		bool ProcessPacket(const char* data, uint16_t len);
 
 		virtual void OnSessionDisconnect() override;
 
 	public:
-		void OnRegisterServer(const CMD_REGISTER_SERVER* req);
-		void OnUpdateServerInfo(const CMD_UPDATE_SERVER_INFO* req);
-		void OnQueryServerInfo(const CMD_QUERY_SERVER_INFO* req);
+		bool OnRegisterServer(const char* data, uint16_t len);
+		bool OnUpdateServerInfo(const char* data, uint16_t len);
+		bool OnQueryServerInfo(const char* data, uint16_t len);
 	};
 }

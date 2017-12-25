@@ -74,22 +74,15 @@ namespace CHServer {
 	}
 
 	bool Session::ProcessData(const char* data, uint16_t len) {
-		const int32_t test = 1;
-		switch (m_head.cmd) {
-
-		case test:
+		
+		std::map<uint16_t, MESSAGEPROCDURE>::iterator iter = m_procedures.find(m_head.cmd);
+		if (iter != m_procedures.end())
 		{
-			static PlayerInfo msg;
-			if (!msg.ParsePartialFromArray(data, len)) {
-				return false;
-			}
-			CHDEBUGLOG(msg.DebugString().c_str());
-			return true;
-		}
-			break;
-		default:
-			// 派发到子类
-			return ProcessPacket(data, len);
+			return iter->second(data, len);
+
+		} else {
+			CHERRORLOG("cant find message procedure: %d", m_head.cmd);
+			return false;
 		}
 	}
 
@@ -104,8 +97,13 @@ namespace CHServer {
 		return m_socket ? m_socket->IsClosed() : true;
 	}
 
-	bool Session::ProcessPacket(const char* data, uint16_t len) {
+	bool Session::RegisterProcedure(uint16_t cmd, MESSAGEPROCDURE procedure) {
+
 		return true;
+	}
+
+	void Session::UnregisterProcedure(uint16_t cmd) {
+
 	}
 
 	void Session::OnSessionDisconnect() {

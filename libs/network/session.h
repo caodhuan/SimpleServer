@@ -2,6 +2,9 @@
 
 #include <stdint.h>
 #include <vector>
+#include <map>
+#include <functional>
+
 #ifdef WIN32 
 #include <WinSock2.h>
 #else
@@ -13,6 +16,8 @@ namespace CHServer {
 	class EventDispatcher;
 	class SocketBase;
 	class Channel;
+
+	typedef std::function<bool(const char*, uint16_t)>  MESSAGEPROCDURE;
 
 	struct PacketHeader {
 		PacketHeader()
@@ -53,11 +58,14 @@ namespace CHServer {
 		void Close();
 
 		bool IsClosed();
+
+		bool RegisterProcedure(uint16_t cmd, MESSAGEPROCDURE procedure);
+
+		void UnregisterProcedure(uint16_t cmd);
+
 	public:
-
-		virtual bool ProcessPacket(const char* data, uint16_t len);
-
 		virtual void OnSessionDisconnect();
+
 	private:
 
 		void OnConnected();
@@ -74,5 +82,7 @@ namespace CHServer {
 	protected:
 		SocketBase* m_socket;
 		PacketHeader m_head; // 包头
+
+		std::map<uint16_t, MESSAGEPROCDURE> m_procedures;
 	};
 }
