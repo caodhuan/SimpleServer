@@ -1,35 +1,59 @@
-#include "server_register.h"
-#include "common.h"
-#include "socket_tcp.h"
-#include "server_base.h"
+#include "server_session.h"
 #include "commonprotobuf.h"
+#include "log.h"
+#include "socket_base.h"
 
 namespace CHServer {
 
-	ServerRegister::ServerRegister(SocketBase* socket)
+	ServerSession::ServerSession(SocketBase* socket)
 		: Session(socket) {
-
-		RegisterProcedure(REGISTER_SERVER_RETURN, std::bind(&ServerRegister::OnRegisterServerReturn, this, std::placeholders::_1, std::placeholders::_2));
-		RegisterProcedure(QUERY_SERVER_INFO_RETURN, std::bind(&ServerRegister::OnQureyServerInfoReturn, this, std::placeholders::_1, std::placeholders::_2));
+		RegisterProcedure(REGISTER_SERVER, std::bind(&ServerSession::OnRegisterServer, this, std::placeholders::_1, std::placeholders::_2) );
+		RegisterProcedure(UPDATE_SERVER_INFO, std::bind(&ServerSession::OnUpdateServerInfo, this, std::placeholders::_1, std::placeholders::_2) );
+		RegisterProcedure(QUERY_SERVER_INFO, std::bind(&ServerSession::OnQueryServerInfo, this, std::placeholders::_1, std::placeholders::_2) );
 	}
 
-	ServerRegister::~ServerRegister() {
+	ServerSession::~ServerSession() {
 
 	}
 
-	void ServerRegister::OnSessionDisconnect() {
+	void ServerSession::OnSessionConnected() {
+
 	}
 
-	void ServerRegister::StartRegister() {
-		
+	void ServerSession::OnSessionDisconnect() {
+		CHWARNINGLOG("OnSessionDisconnect");
 	}
 
-	bool ServerRegister::OnRegisterServerReturn(const char* data, uint16_t len) {
+	bool ServerSession::OnRegisterServer(const char* data, uint16_t len) {
+		CHWARNINGLOG("OnRegisterServer");
+
+		static CMD_REGISTER_SERVER req;
+		if (!req.ParseFromArray(data, len)) {
+			return false;
+		}
 
 		return true;
 	}
 
-	bool ServerRegister::OnQureyServerInfoReturn(const char* data, uint16_t len) {
+	bool ServerSession::OnUpdateServerInfo(const char* data, uint16_t len) {
+		CHWARNINGLOG("OnUpdateServerInfo");
+
+		static CMD_UPDATE_SERVER_INFO req;
+		if (!req.ParseFromArray(data, len)) {
+			return false;
+		}
+
+		return true;
+	}
+
+	bool ServerSession::OnQueryServerInfo(const char* data, uint16_t len) {
+		CHWARNINGLOG("OnQueryServerInfo");
+
+		static CMD_QUERY_SERVER_INFO req;
+		if (!req.ParseFromArray(data, len)) {
+			return false;
+		}
+
 		return true;
 	}
 

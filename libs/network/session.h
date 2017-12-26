@@ -17,7 +17,7 @@ namespace CHServer {
 	class SocketBase;
 	class Channel;
 
-	typedef std::function<bool(const char*, uint16_t)>  MESSAGEPROCDURE;
+	typedef std::function<bool(const char*, uint16_t)>  MESSAGEPROCEDURE;
 
 	struct PacketHeader {
 		PacketHeader()
@@ -59,11 +59,13 @@ namespace CHServer {
 
 		bool IsClosed();
 
-		bool RegisterProcedure(uint16_t cmd, MESSAGEPROCDURE procedure);
+		bool RegisterProcedure(uint16_t cmd, MESSAGEPROCEDURE procedure);
 
 		void UnregisterProcedure(uint16_t cmd);
 
 	public:
+		virtual void OnSessionConnected();
+
 		virtual void OnSessionDisconnect();
 
 	private:
@@ -79,10 +81,11 @@ namespace CHServer {
 
 		void Send(const char* data, uint16_t len);
 
+		MESSAGEPROCEDURE FindProcedure(uint16_t cmd);
 	protected:
 		SocketBase* m_socket;
 		PacketHeader m_head; // 包头
 
-		std::map<uint16_t, MESSAGEPROCDURE> m_procedures;
+		std::map<uint16_t, MESSAGEPROCEDURE> m_procedures;
 	};
 }

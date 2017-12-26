@@ -9,8 +9,6 @@
 
 namespace CHServer {
 
-	class Session;
-
 	class ServerRegister : public Session {
 	public:
 		ServerRegister(SocketBase* socket);

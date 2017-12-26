@@ -13,6 +13,10 @@ namespace CHServer {
 
 	}
 
+	void SessionPlayer::OnSessionConnected() {
+
+	}
+
 	void SessionPlayer::OnSessionDisconnect() {
 		((MyServer*)ServerBase::Instance())->RemoveSession(this);
 		delete this;

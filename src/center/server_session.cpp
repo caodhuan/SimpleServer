@@ -16,6 +16,10 @@ namespace CHServer {
 
 	}
 
+	void ServerSession::OnSessionConnected() {
+
+	}
+
 	void ServerSession::OnSessionDisconnect() {
 		CHWARNINGLOG("OnSessionDisconnect");
 	}

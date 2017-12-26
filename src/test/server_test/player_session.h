@@ -9,6 +9,8 @@ namespace CHServer {
 		~SessionPlayer();
 
 	public:
+		virtual void OnSessionConnected() override;
+
 		virtual void OnSessionDisconnect() override;
 	};
 }

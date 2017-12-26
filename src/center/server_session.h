@@ -12,7 +12,7 @@ namespace CHServer {
 		~ServerSession();
 
 	public:
-		bool ProcessPacket(const char* data, uint16_t len);
+		virtual void OnSessionConnected() override;
 
 		virtual void OnSessionDisconnect() override;
 

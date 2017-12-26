@@ -19,6 +19,7 @@ namespace CHServer {
 	}
 
 	void Session::OnConnected() {
+		OnSessionConnected();
 	}
 
 	void Session::SendPacket(uint16_t cmd, const char* data, uint16_t len) {
@@ -74,16 +75,17 @@ namespace CHServer {
 	}
 
 	bool Session::ProcessData(const char* data, uint16_t len) {
-		
-		std::map<uint16_t, MESSAGEPROCDURE>::iterator iter = m_procedures.find(m_head.cmd);
-		if (iter != m_procedures.end())
-		{
-			return iter->second(data, len);
+
+		MESSAGEPROCEDURE procedure = FindProcedure(m_head.cmd);
+
+		if (procedure) {
+			return procedure(data, len);
 
 		} else {
 			CHERRORLOG("cant find message procedure: %d", m_head.cmd);
 			return false;
 		}
+
 	}
 
 	void Session::Close() {
@@ -97,12 +99,27 @@ namespace CHServer {
 		return m_socket ? m_socket->IsClosed() : true;
 	}
 
-	bool Session::RegisterProcedure(uint16_t cmd, MESSAGEPROCDURE procedure) {
+	bool Session::RegisterProcedure(uint16_t cmd, MESSAGEPROCEDURE procedure) {
+		MESSAGEPROCEDURE hadProcedure = FindProcedure(cmd);
+		
+		if (!hadProcedure) {
+			m_procedures.insert(std::make_pair(cmd, procedure));
+
+		} else {
+			CHERRORLOG("duplicate message procedure cmd=%d", cmd);
+
+			return false;
+
+		}
 
 		return true;
 	}
 
 	void Session::UnregisterProcedure(uint16_t cmd) {
+		m_procedures.erase(cmd);
+	}
+
+	void Session::OnSessionConnected() {
 
 	}
 
@@ -112,6 +129,15 @@ namespace CHServer {
 
 	void Session::Send(const char* data, uint16_t len) {
 		m_socket->Send(data, len);
+	}
+
+	MESSAGEPROCEDURE Session::FindProcedure(uint16_t cmd) {
+		std::map<uint16_t, MESSAGEPROCEDURE>::iterator iter = m_procedures.find(m_head.cmd);
+		if (iter != m_procedures.end()) {
+			return iter->second;
+
+		}
+		return nullptr;
 	}
 
 }
