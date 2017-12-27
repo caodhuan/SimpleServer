@@ -3,6 +3,8 @@
 #include <lua.hpp>
 #include <string>
 #include <vector>
+#include <stdint.h>
+
 namespace CHServer {
 	// 读取服务器配置
 	// 一个Config代表一组配置，每组配置用table来表示
@@ -27,12 +29,21 @@ namespace CHServer {
 		// 这个Config与父Config共享一个虚拟机
 		Config* ReadTable(const char* name);
 
+		template<typename T>
+		bool ReadVector(const char* name, std::vector<T>& values) {
+			return DoReadTable(name, values);
+		}
+
 	private:
 		void AddTableName(const char* name);
 
 		void PreparaStack(const char* fieldName);
 		
 		void RecoverStack();
+
+		bool DoReadTable(const char* name, std::vector<int32_t>& values);
+
+		bool DoReadTable(const char* name, std::vector<std::string>& values);
 	private:
 		// 每个配置文件，单独一个虚拟机
 		lua_State* m_state;

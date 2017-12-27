@@ -131,4 +131,48 @@ namespace CHServer {
 		m_stackPos = INVALID_STACK_POS;
 	}
 
+	bool Config::DoReadTable(const char* name, std::vector<int32_t>& values) {
+		PreparaStack(name);
+		if (!lua_istable(m_state, -1)) {
+			return false;
+		}
+
+		lua_pushnil(m_state);
+
+		while (lua_next(m_state, -1)) {
+			int32_t value = luaL_checkinteger(m_state, -1);
+			values.push_back(value);
+			lua_pop(m_state, 1);
+
+		}
+
+		RecoverStack();
+
+		return true;
+	}
+
+	bool Config::DoReadTable(const char* name, std::vector<std::string>& values) {
+		PreparaStack(name);
+		if (!lua_istable(m_state, -1)) {
+			return false;
+		}
+
+		lua_pushnil(m_state);
+
+		while (lua_next(m_state, -1)) {
+			size_t size = 0;
+			const char* tmpValue= luaL_checklstring(m_state, -1, &size);
+			std::string value;
+			value.assign(tmpValue, size);
+			values.push_back(value);
+
+			lua_pop(m_state, 1);
+
+		}
+
+		RecoverStack();
+
+		return true;
+	}
+
 }
