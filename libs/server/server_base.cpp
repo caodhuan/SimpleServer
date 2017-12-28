@@ -85,6 +85,13 @@ namespace CHServer {
 			return false;
 		}
 
+		std::vector<std::string> whiteList;
+		if (!config->ReadVector("sWhiteList", whiteList)) {
+			CHERRORLOG("read white list failed!");
+			return false;
+		}
+		
+
 		m_Server->Listen(internalIP.c_str(), internalPort);
 
 		return AfterInitilize();
