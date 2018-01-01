@@ -2,10 +2,13 @@ cmake_minimum_required(VERSION 2.8)
 
 project(CHServer)
 
-include(cmake/macros.cmake)
-include(cmake/3rd.cmake)
-include(cmake/libs.cmake)
-include(cmake/servers.cmake)
+set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+
+include(cotire)
+include(macros)
+include(3rd)
+include(libs)
+include(servers)
 
 
 group(test)
