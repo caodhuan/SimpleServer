@@ -4,12 +4,15 @@ project(CHServer)
 
 set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
+if(NOT WIN32)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -std=c++11 -g")
+endif()
+
 include(cotire)
 include(macros)
 include(3rd)
 include(libs)
 include(servers)
-
 
 group(test)
 	addexec(client_test ${CMAKE_CURRENT_SOURCE_DIR}/src/test/client_test)
@@ -19,8 +22,6 @@ group(test)
 	addexec(redis_test ${CMAKE_CURRENT_SOURCE_DIR}/src/test/redis_test)
 endgroup()
 
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -std=c++11 -g")
 
 if(WIN32)
 	set(lib_path ${CMAKE_CURRENT_SOURCE_DIR}/3rd/mysql/win)
