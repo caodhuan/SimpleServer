@@ -159,7 +159,7 @@ namespace CHServer {
 
 		lua_pushnil(m_state);
 
-		while (lua_next(m_state, -1)) {
+		while (lua_next(m_state, -2)) {
 			size_t size = 0;
 			const char* tmpValue= luaL_checklstring(m_state, -1, &size);
 			std::string value;

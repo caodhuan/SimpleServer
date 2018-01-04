@@ -75,7 +75,7 @@ namespace CHServer {
 		int32_t internalPort;
 		std::string internalIP;
 
-		if (!config->ReadInt("sInternalPort", internalPort)) {
+		if (!config->ReadInt("nInternalPort", internalPort)) {
 			CHERRORLOG("read internal port failed!");
 			return false;
 		}
