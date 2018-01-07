@@ -7,6 +7,3 @@
 [submodule "3rd/hiredis/linux/hiredis"]
 	path = 3rd/hiredis/linux/hiredis
 	url = https://github.com/redis/hiredis.git
-[submodule "3rd/hiredis/win/hiredis"]
-	path = 3rd/hiredis/win/hiredis
-	url = https://github.com/caodhuan/hiredis
