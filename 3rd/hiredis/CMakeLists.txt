@@ -41,11 +41,11 @@ if(WIN32)
 	)
 else()
 	file(GLOB hiredis_src 
-		${CMAKE_CURRENT_SOURCE_DIR}/linux/hiredis/*.h
-		${CMAKE_CURRENT_SOURCE_DIR}/linux/hiredis/*.c
+		${CMAKE_CURRENT_SOURCE_DIR}/linux/*.h
+		${CMAKE_CURRENT_SOURCE_DIR}/linux/*.c
 	)
 
-	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/linux/hiredis)
+	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/linux)
 
 	add_definitions(-DUNICODE -D_UNICODE)
 
