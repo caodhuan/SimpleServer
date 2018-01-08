@@ -42,7 +42,7 @@ if(WIN32)
 	endforeach()
 	
 
-	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/3rd/hiredis/win/hiredis/)
+	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/3rd/hiredis/windows)
 
 else()
 	set(lib_path ${CMAKE_CURRENT_SOURCE_DIR}/3rd/mysql/linux)
@@ -58,7 +58,7 @@ else()
     	target_link_libraries(${project} ${mysqlclient_lib} pthread dl )
     endforeach()
 
-	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/3rd/hiredis/linux/hiredis/)
+	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/3rd/hiredis/linux)
 
 endif()
 

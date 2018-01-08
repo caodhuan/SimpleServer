@@ -20,7 +20,7 @@ if(WIN32)
 
 	)
 
-	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/win/hiredis)
+	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/windows)
 	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/windows/msvs/deps)
 
 	add_definitions(-DUNICODE -D_UNICODE -D_CRT_SECURE_NO_WARNINGS )
@@ -46,7 +46,7 @@ else()
 	)
 
 	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/linux)
-
+	
 	add_definitions(-DUNICODE -D_UNICODE)
 
 	add_library(hiredis ${hiredis_src})
