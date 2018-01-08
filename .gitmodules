@@ -4,6 +4,9 @@
 [submodule "3rd/protobuf"]
 	path = 3rd/protobuf
 	url = https://github.com/google/protobuf
+[submodule "3rd/hiredis/linux"]
+	path = 3rd/hiredis/linux
+	url = https://github.com/redis/hiredis.git
 [submodule "3rd/hiredis/windows"]
 	path = 3rd/hiredis/windows
 	url = https://github.com/caodhuan/hiredis.git
