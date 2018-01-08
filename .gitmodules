@@ -10,3 +10,6 @@
 [submodule "3rd/hiredis/win/hiredis"]
 	path = 3rd/hiredis/win/hiredis
 	url = https://github.com/caodhuan/hiredis
+[submodule "3rd/hiredis/windows"]
+	path = 3rd/hiredis/windows
+	url = https://github.com/caodhuan/hiredis.git
