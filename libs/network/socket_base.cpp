@@ -15,7 +15,9 @@ namespace CHServer {
 		, m_sendBuffIndex(0)
 		, m_sendingBufferHead(&m_sendBuffer[1])
 		, m_dispatcher(dispatcher)
-		, m_isWriting(false) {
+		, m_isWriting(false)
+		, m_shutDown(NULL)
+		, m_isShutDown(false) {
 		for (int i = 0; i < SocketBase::MAX; i++) {
 			m_callback[i] = nullptr;
 		}
@@ -39,6 +41,20 @@ namespace CHServer {
 
 	bool SocketBase::IsClosed() {
 		return GetHandle() == NULL;
+	}
+
+	bool SocketBase::IsShutDown() {
+		return m_isShutDown;
+	}
+
+	void SocketBase::ShutDown() {
+		if (m_isShutDown || m_shutDown) {
+			return;
+		}
+
+		m_shutDown = new uv_shutdown_t();
+
+		uv_shutdown(m_shutDown, (uv_stream_t*)GetHandle(), SocketBase::OnShutDown);
 	}
 
 	void SocketBase::Send(const char* data, uint16_t len) {
@@ -88,6 +104,10 @@ namespace CHServer {
 		}
 		memcpy(&buffer[m_sendBuffIndex], data, len);
 		m_sendBuffIndex += len;
+	}
+
+	void SocketBase::SetShutDown() {
+		m_isShutDown = true;
 	}
 
 	void SocketBase::OnNewConnection(uv_stream_t* handle, int status) {
@@ -161,4 +181,15 @@ namespace CHServer {
 			delete socket;
 		}
 	}
+
+	void SocketBase::OnShutDown(uv_shutdown_t* req, int status) {
+		SocketBase* socket = (SocketBase*)req->handle->data;
+
+		if (socket->m_callback[SHUTDOWN]) {
+			socket->m_callback[SHUTDOWN]();
+		} else {
+			delete socket;
+		}
+	}
+
 }

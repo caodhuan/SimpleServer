@@ -26,7 +26,12 @@ namespace CHServer {
 		virtual int32_t GetPort() = 0;
 	public:
 		void SetCallback(SocketCallback connected, SocketCallback received, SocketCallback closed);
+		
 		bool IsClosed();
+
+		bool IsShutDown();
+
+		void ShutDown();
 
 		void Send(const char* data, uint16_t len);
 
@@ -41,6 +46,7 @@ namespace CHServer {
 	private:
 		void AppendSendData(const char* data, uint16_t len);
 		
+		void SetShutDown();
 	public:
 
 		static void OnNewConnection(uv_stream_t* handle, int status);
@@ -55,11 +61,14 @@ namespace CHServer {
 
 		static void OnClosed(uv_handle_t* handle);
 
+		static void OnShutDown(uv_shutdown_t* req, int status);
+
 	protected:
 		enum {
 			CONNECTED = 0,
 			RECEIVED = 1,
 			CLOSED = 2,
+			SHUTDOWN = 3,
 			MAX,
 		};
 		static const int32_t SendBuffCount = 2;
@@ -76,6 +85,9 @@ namespace CHServer {
 
 		uv_write_t m_writer;
 		bool m_isWriting;
+
+		uv_shutdown_t* m_shutDown;
+		bool m_isShutDown;
 	};
 
 }
