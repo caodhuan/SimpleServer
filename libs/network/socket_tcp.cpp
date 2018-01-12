@@ -34,6 +34,10 @@ namespace CHServer {
 	}
 
 	void SocketTCP::Close() {
+		if (!m_handle) {
+			return;
+		}
+
 		uv_close((uv_handle_t*)m_handle, SocketBase::OnClosed);
 		m_handle = NULL;
 	}
@@ -55,14 +59,15 @@ namespace CHServer {
 		int len = sizeof(addr);
 		char ip[64] = { 0 };
 		uv_tcp_getpeername(m_handle, (sockaddr*)&addr, &len);
+
 		return addr.sin_port;
 	}
 
 	void SocketTCP::Connect(const char* ip, int32_t port) {
 		if (m_connector) {
-
 			return;
 		}
+
 		m_connector = new uv_connect_t();
 		m_connector->data = this;
 
