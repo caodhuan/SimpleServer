@@ -22,6 +22,7 @@ namespace CHServer {
 
 	private:
 		bool OnRegisterServerReturn(const char* data, uint16_t len);
+
 		bool OnQureyServerInfoReturn(const char* data, uint16_t len);
 		
 	};

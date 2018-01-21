@@ -8,7 +8,9 @@ namespace CHServer {
 	ServerSession::ServerSession(SocketBase* socket)
 		: Session(socket) {
 		RegisterProcedure(REGISTER_SERVER, std::bind(&ServerSession::OnRegisterServer, this, std::placeholders::_1, std::placeholders::_2) );
+
 		RegisterProcedure(UPDATE_SERVER_INFO, std::bind(&ServerSession::OnUpdateServerInfo, this, std::placeholders::_1, std::placeholders::_2) );
+
 		RegisterProcedure(QUERY_SERVER_INFO, std::bind(&ServerSession::OnQueryServerInfo, this, std::placeholders::_1, std::placeholders::_2) );
 	}
 
