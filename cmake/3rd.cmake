@@ -25,6 +25,8 @@ add_subdirectory(3rd)
 # hiredis
 add_subdirectory(3rd/hiredis)
 
+# leveldb
+add_subdirectory(3rd/leveldb)
 
 # lua 5.3.4
 file(GLOB libluafilesrc )
