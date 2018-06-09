@@ -38,7 +38,7 @@ namespace leveldb {
 const int kNumNonTableCacheFiles = 10;
 
 // Information kept for every waiting writer
-struct DBImpl::Writer {
+struct DBImpl::Writer { // 看起来，只是个 wrapper
   Status status;
   WriteBatch* batch;
   bool sync;
@@ -1167,7 +1167,7 @@ Status DBImpl::Write(const WriteOptions& options, WriteBatch* my_batch) {
 
   MutexLock l(&mutex_);
   writers_.push_back(&w);
-  while (!w.done && &w != writers_.front()) {
+  while (!w.done && &w != writers_.front()) { // 这是一个阻塞线程的操作？ 如果 writers_ 有待写的，就阻塞了？
     w.cv.Wait();
   }
   if (w.done) {

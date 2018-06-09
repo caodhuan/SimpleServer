@@ -1,0 +1,15 @@
+SSTable 是一个持久化的、排序的、不可更改的 Map 结构，而 Map 是一个 key-value 映射的数据结构，key 和 value 的值都是任意的 Byte 串
+
+
+
+这就是一个 WriteBatch 对所操作的内存数据的 抽象
+WriteBatch::rep_ :=
+   sequence: fixed64
+   count: fixed32
+   data: record[count]
+record :=
+   kTypeValue varstring varstring         |
+   kTypeDeletion varstring
+varstring :=
+   len: varint32
+   data: uint8[len]

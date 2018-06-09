@@ -13,6 +13,8 @@
 //    len: varint32
 //    data: uint8[len]
 
+//////// 上面的解释， 完全描述了下面的代码做了什么
+/////// 所以每个 writebatch 就是代表了一段内存
 #include "leveldb/write_batch.h"
 
 #include "leveldb/db.h"
@@ -24,7 +26,7 @@
 namespace leveldb {
 
 // WriteBatch header has an 8-byte sequence number followed by a 4-byte count.
-static const size_t kHeader = 12;
+static const size_t kHeader = 12;  // 4个字节记录长度， 说明 value 的最大长度是 一个 unsign int
 
 WriteBatch::WriteBatch() {
   Clear();
@@ -105,6 +107,8 @@ void WriteBatch::Put(const Slice& key, const Slice& value) {
 void WriteBatch::Delete(const Slice& key) {
   WriteBatchInternal::SetCount(this, WriteBatchInternal::Count(this) + 1);
   rep_.push_back(static_cast<char>(kTypeDeletion));
+  
+  // 变长的 keylength  key
   PutLengthPrefixedSlice(&rep_, key);
 }
 
