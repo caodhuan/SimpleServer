@@ -1,7 +1,7 @@
 
 # proto文件相关
 # 先删除掉生成的文件，如果有的话
-file(GLOB REMOVED
+file(GLOB_RECURSE REMOVED
 	${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/*.h
 	${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/*.cc
 	)
@@ -13,7 +13,7 @@ endif()
 
 set(COMMONPROTOBUFHEADER "${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/commonprotobuf.h")
 
-file(GLOB PROTO
+file(GLOB_RECURSE PROTO
 	${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/*.proto
 	)
 
@@ -32,11 +32,11 @@ execute_process(
 	COMMAND ${protoexe} ${PROTO} -I=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/
 )
 
-file(GLOB GENERATEDSRC
+file(GLOB_RECURSE GENERATEDSRC
 	${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/*.cc
 	)
 
-file(GLOB GENERATEDHEAD
+file(GLOB_RECURSE GENERATEDHEAD
 	${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/*.h
 	)
 
