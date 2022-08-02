@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 2.8)
-
 add_definitions(-DUNICODE -D_UNICODE
 	-D_CRT_SECURE_NO_DEPRECATE
 	-D_CRT_NONSTDC_NO_DEPRECATE
