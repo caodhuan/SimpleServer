@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package ss;
+package cs;
 
 message PlayerInfo {
   string name = 1;

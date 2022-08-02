@@ -1,5 +1,5 @@
 libs/protos/commonprotobuf.h
-libs/protos/*.pb.h
-libs/protos/*.pb.cc
+libs/protos/*/*.pb.h
+libs/protos/*/*.pb.cc
 .vscode/
 Build/
