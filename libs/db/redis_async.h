@@ -1,62 +1,65 @@
 #pragma once
-#include "uv.h"
 
 #include <stdint.h>
+
 #include <functional>
 #include <map>
-
 
 struct redisAsyncContext;
 
 namespace CHServer {
 
-	class EventDispatcher;
+class EventDispatcher;
 
-	class RedisAsync;
+class RedisAsync;
 
-	typedef std::function<void(RedisAsync*, void* r)> RedisAsyncCommandCallback;
+typedef std::function<void(RedisAsync*, void* r)> RedisAsyncCommandCallback;
 
-	class RedisAsync {
-		friend class RedisFactory;
-	public:
-		bool Connect(const char* ip, const int32_t port, EventDispatcher* dispatcher);
+class RedisAsync {
+  friend class RedisFactory;
 
-		void Command(RedisAsyncCommandCallback callback, const char *format, ...);
+ public:
+  bool Connect(const char* ip, const int32_t port, EventDispatcher* dispatcher);
 
-		void Command(RedisAsyncCommandCallback callback, int argc, const char **argv, const uint64_t *argvlen);
+  void Command(RedisAsyncCommandCallback callback, const char* format, ...);
 
-	private:
-		void AddCallback(int32_t key, RedisAsyncCommandCallback callback);
+  void Command(RedisAsyncCommandCallback callback, int argc, const char** argv,
+               const uint64_t* argvlen);
 
-	private:
-		static void OnConnectCallback(const redisAsyncContext *c, int status);
+ private:
+  void AddCallback(int32_t key, RedisAsyncCommandCallback callback);
 
-		static void OnDisconnectCallback(const redisAsyncContext *c, int status);
+ private:
+  static void OnConnectCallback(const redisAsyncContext* c, int status);
 
-		static void OnCmdCallback(redisAsyncContext *c, void *r, void *privatedata);
+  static void OnDisconnectCallback(const redisAsyncContext* c, int status);
 
-	private:
-		static int RedisAttach(redisAsyncContext* context, EventDispatcher* dispatcher);
-		static void RedisPoll(uv_poll_t* handle, int status, int events);
-		static void RedisAddRead(void* privateData);
-		static void RedisDelRead(void* privateData);
-		static void RedisAddWrite(void* privateData);
-		static void RedisDelWrite(void* privateData);
-		static void RedisCleanup(void* privateData);
+  static void OnCmdCallback(redisAsyncContext* c, void* r, void* privatedata);
 
-		static void OnClose(uv_handle_t* handle);
-	private:
-		RedisAsync();
+ private:
+  static int RedisAttach(redisAsyncContext* context,
+                         EventDispatcher* dispatcher);
+  //static void RedisPoll(uv_poll_t* handle, int status, int events);
+  static void RedisAddRead(void* privateData);
+  static void RedisDelRead(void* privateData);
+  static void RedisAddWrite(void* privateData);
+  static void RedisDelWrite(void* privateData);
+  static void RedisCleanup(void* privateData);
 
-		~RedisAsync();
+  //static void OnClose(uv_handle_t* handle);
 
-	private:
-		redisAsyncContext* m_context;
+ private:
+  RedisAsync();
 
-		uv_poll_t* m_poll;
-		int m_events;
+  ~RedisAsync();
 
-	private:
-		std::map<int32_t, RedisAsyncCommandCallback> m_callbacks;
-	};
-}
+ private:
+  redisAsyncContext* m_context;
+
+  //uv_poll_t* m_poll;
+  int m_events;
+
+ private:
+  std::map<int32_t, RedisAsyncCommandCallback> m_callbacks;
+};
+}  // namespace CHServer

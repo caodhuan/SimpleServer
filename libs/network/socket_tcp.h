@@ -12,7 +12,7 @@ namespace CHServer {
 
 	public:
 
-		uv_handle_t* GetHandle() override;
+		// uv_handle_t* GetHandle() override;
 
 		void Close() override;
 
@@ -29,8 +29,8 @@ namespace CHServer {
 		void SetNodely(bool enable);
 
 	private:
-		uv_tcp_t* m_handle;
+		// uv_tcp_t* m_handle;
 
-		uv_connect_t* m_connector;
+		// uv_connect_t* m_connector;
 	};
 }

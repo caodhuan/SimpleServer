@@ -1,20 +1,15 @@
 #include <iostream>
-#include "log.h"
 
-#include "uv.h"
 #include "event_dispatcher.h"
-#include "socket_tcp.h"
+#include "log.h"
 #include "my_server.h"
-
-
+#include "socket_tcp.h"
 
 using namespace CHServer;
 int main() {
+  if (MyServer::Instance()->Initilize("./res/config.lua", "tServer")) {
+    MyServer::Instance()->Run();
+  }
 
-
-	if (MyServer::Instance()->Initilize("./res/config.lua", "tServer")) {
-		MyServer::Instance()->Run();
-	}
-
-	MyServer::Instance()->Finalize();
+  MyServer::Instance()->Finalize();
 }

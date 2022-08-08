@@ -20,10 +20,6 @@ else()
 	message("CANT find protobuf")
 endif()
 
-
-# libuv的cmake
-add_subdirectory(3rd)
-
 # hiredis
 add_subdirectory(3rd/hiredis)
 

@@ -2,8 +2,6 @@
 #include "singleton.h"
 #include "blockingqueue.h"
 
-#include "uv.h"
-
 #include <mutex>
 #include <atomic>
 #include <thread>
@@ -41,11 +39,11 @@ namespace CHServer {
 	private:
 		void DoLog();
 
-		static void PrepareFile(const char* path, const char* prefix, uint32_t& day, uv_fs_t& fileHandle);
+		// static void PrepareFile(const char* path, const char* prefix, uint32_t& day, uv_fs_t& fileHandle);
 
-		static void OpenFile(char* fileName, uv_fs_t& fileHandle);
+		// static void OpenFile(char* fileName, uv_fs_t& fileHandle);
 
-		static void FormatTime(char* formatTime, int32_t size, uint32_t& lastSecond);
+		// static void FormatTime(char* formatTime, int32_t size, uint32_t& lastSecond);
 	private:
 		BlockingQueue<LogData> m_logData; // 考虑换 T
 

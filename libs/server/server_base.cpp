@@ -4,7 +4,6 @@
 #include "log.h"
 #include "socket_tcp.h"
 
-#include "uv.h"
 #include "timer_factory.h"
 #include "resource _manager.h"
 #include "config.h"

@@ -23,11 +23,6 @@ group(test)
 	addexec(test ${CMAKE_CURRENT_SOURCE_DIR}/src/test/test)
 endgroup()
 
-include_directories(${lib_path}/include)
-include_directories(
-	3rd/libuv/include
-	3rd/libuv/src)
-
 target_link_libraries(client_test server) 
 
 target_link_libraries(server_test server) 

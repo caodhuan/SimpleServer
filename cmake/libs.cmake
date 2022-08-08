@@ -1,56 +1,56 @@
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
 # proto文件相关
 # 先删除掉生成的文件，如果有的话
-file(GLOB_RECURSE REMOVED
-	${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/*.h
-	${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/*.cc
-	)
-if(REMOVED)
-	file(REMOVE ${REMOVED})
-else()
-	make_directory(${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/)
-endif()
+# file(GLOB_RECURSE REMOVED
+# 	${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/*.h
+# 	${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/*.cc
+# 	)
+# if(REMOVED)
+# 	file(REMOVE ${REMOVED})
+# else()
+# 	make_directory(${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/)
+# endif()
 
-set(COMMONPROTOBUFHEADER "${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/commonprotobuf.h")
+# set(COMMONPROTOBUFHEADER "${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/commonprotobuf.h")
 
-file(GLOB_RECURSE PROTO
-	${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/*.proto
-	)
+# file(GLOB_RECURSE PROTO
+# 	${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/*.proto
+# 	)
 
 
 # debug和release都尝试一下
 # 这里需要先cmake一次,编译后，再cmake一次
-if(EXISTS ${CMAKE_CURRENT_BINARY_DIR}/3rd/protobuf/cmake/Debug/protoc.exe)
-	set(protoexe  ${CMAKE_CURRENT_BINARY_DIR}/3rd/protobuf/cmake/Debug/protoc.exe)
-elseif(EXISTS ${CMAKE_CURRENT_BINARY_DIR}/3rd/protobuf/cmake/Release/protoc.exe)
-	set(protoexe  ${CMAKE_CURRENT_BINARY_DIR}/3rd/protobuf/cmake/Debug/protoc.exe)
-else()
-	set(protoexe  ${CMAKE_CURRENT_BINARY_DIR}/3rd/protobuf/cmake/protoc)
-endif()
+# if(EXISTS ${CMAKE_CURRENT_BINARY_DIR}/3rd/protobuf/cmake/Debug/protoc.exe)
+# 	set(protoexe  ${CMAKE_CURRENT_BINARY_DIR}/3rd/protobuf/cmake/Debug/protoc.exe)
+# elseif(EXISTS ${CMAKE_CURRENT_BINARY_DIR}/3rd/protobuf/cmake/Release/protoc.exe)
+# 	set(protoexe  ${CMAKE_CURRENT_BINARY_DIR}/3rd/protobuf/cmake/Debug/protoc.exe)
+# else()
+# 	set(protoexe  ${CMAKE_CURRENT_BINARY_DIR}/3rd/protobuf/cmake/protoc)
+# endif()
 
-execute_process(
-	COMMAND ${protoexe} ${PROTO} -I=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/
-)
+# execute_process(
+# 	COMMAND ${protoexe} ${PROTO} -I=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/
+# )
 
-file(GLOB_RECURSE GENERATEDSRC
-	${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/*.cc
-	)
+# file(GLOB_RECURSE GENERATEDSRC
+# 	${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/*.cc
+# 	)
 
-file(GLOB_RECURSE GENERATEDHEAD
-	${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/*.h
-	)
+# file(GLOB_RECURSE GENERATEDHEAD
+# 	${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/*.h
+# 	)
 
-source_group(GeneratedFiles FILES ${GENERATEDSRC} ${GENERATEDHEAD} )
-source_group(protos FILES ${PROTO} )
+# source_group(GeneratedFiles FILES ${GENERATEDSRC} ${GENERATEDHEAD} )
+# source_group(protos FILES ${PROTO} )
 
 
-file(WRITE ${COMMONPROTOBUFHEADER} "#pragma once\n")
+# file(WRITE ${COMMONPROTOBUFHEADER} "#pragma once\n")
 
-foreach(files ${GENERATEDHEAD})
+# foreach(files ${GENERATEDHEAD})
 
-	string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/" "" ONEHREAD ${files} )
-	file(APPEND ${COMMONPROTOBUFHEADER} "#include \"${ONEHREAD}\"\n")
-endforeach()
+# 	string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/" "" ONEHREAD ${files} )
+# 	file(APPEND ${COMMONPROTOBUFHEADER} "#include \"${ONEHREAD}\"\n")
+# endforeach()
 
 
 group(base)
@@ -61,8 +61,7 @@ group(base)
 	addlib(server ${CMAKE_CURRENT_SOURCE_DIR}/libs/server)
 	addlib(resource ${CMAKE_CURRENT_SOURCE_DIR}/libs/resource)
 
-
-	target_link_libraries(network libuv common protos) 
+	target_link_libraries(network common protos) 
 	target_link_libraries(db hiredis) 
 	target_link_libraries(protos libprotobuf) 
 	target_link_libraries(server resource network protos db common) 
@@ -83,7 +82,7 @@ if(WIN32)
 	target_link_libraries(db ws2_32.lib Psapi.lib IPHLPAPI.lib userenv.lib)
 	
 	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/3rd/hiredis/windows)
-
+	include_directories(${lib_path}/include)
 else()
 
 	set(lib_path ${CMAKE_CURRENT_SOURCE_DIR}/3rd/mysql/linux)
@@ -93,15 +92,15 @@ else()
 	target_link_libraries(db pthread dl )
 
 	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/3rd/hiredis/linux)
-
+	include_directories(${lib_path}/include)
 endif()
 
 target_link_libraries(db ${mysqlclient_lib})
 
 # 增加custom build
-add_custom_command(TARGET protos PRE_BUILD 
-	COMMAND protoc ${PROTO} -I=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/ --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/
-)
+# add_custom_command(TARGET protos PRE_BUILD 
+# 	COMMAND protoc ${PROTO} -I=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/ --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/
+# )
 
 find_package(Boost 1.75.0 REQUIRED) 
 if(Boost_FOUND)

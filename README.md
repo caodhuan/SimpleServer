@@ -1,7 +1,7 @@
 [![](https://travis-ci.org/caodhuan/CHServer.svg?branch=master)](https://travis-ci.org/caodhuan/CHServer) ![](https://img.shields.io/badge/language-cpp-brightgreen.svg)
 # CHServer
 一个 mmo 游戏服务器。
-使用 libuv 做网络库，redis 做缓存，mysql 做数据落地，protobuf 做为数据传输、存储格式。
+使用 asio 做网络库，redis 做缓存，mysql 做数据落地，protobuf 做为数据传输、存储格式。
 使用 lua 脚本作为服务器的配置文件。
 
 ## 构建
