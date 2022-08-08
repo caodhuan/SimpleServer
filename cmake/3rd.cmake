@@ -1,29 +1,10 @@
-cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.2)
 
 # 添加protobuf
-file(GLOB pb ${CMAKE_CURRENT_SOURCE_DIR}/3rd/protobuf/cmake/*)
-if(pb)
-	message(STATUS "found protobuf")
-	option(protobuf_BUILD_TESTS OFF)
-
-	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/3rd/protobuf/cmake/)
-	
-	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/3rd/protobuf/src)
-
-	set_target_properties(libprotobuf PROPERTIES FOLDER 3rd/protobuf)
-	set_target_properties(libprotobuf-lite PROPERTIES FOLDER 3rd/protobuf)
-	set_target_properties(libprotoc PROPERTIES FOLDER 3rd/protobuf)
-	set_target_properties(protoc PROPERTIES FOLDER 3rd/protobuf)
-	set_target_properties(js_embed PROPERTIES FOLDER 3rd/protobuf)
-
-else()
-	message("CANT find protobuf")
-endif()
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/3rd/protobuf/src)
 
 # hiredis
 add_subdirectory(3rd/hiredis)
 
 # leveldb
 add_subdirectory(3rd/leveldb)
-
-#############################################################################

@@ -1,6 +1,5 @@
 #include "session.h"
 #include "socket_tcp.h"
-#include "commonprotobuf.h"
 #include <functional>
 #include "log.h"
 

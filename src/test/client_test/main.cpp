@@ -8,13 +8,12 @@
 
 #include <iostream>
 
-#include "commonprotobuf.h"
 #include "event_dispatcher.h"
 #include "log.h"
 #include "mysql.h"
 #include "session.h"
 #include "socket_tcp.h"
-
+#include "ss/common.pb.h"
 using namespace std;
 using namespace CHServer;
 

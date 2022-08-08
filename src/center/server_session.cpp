@@ -1,7 +1,7 @@
 #include "server_session.h"
-#include "commonprotobuf.h"
 #include "log.h"
 #include "socket_base.h"
+#include "ss/private_server_command.pb.h"
 
 namespace CHServer {
 

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.2)
 
 project(CHServer)
 
@@ -27,13 +27,13 @@ target_link_libraries(client_test server)
 
 target_link_libraries(server_test server) 
 
-target_link_libraries(redis_test network db libprotobuf) 
+target_link_libraries(redis_test network db protos) 
 
 
-if(UNIX)
-	FIND_LIBRARY(gperftools profiler)
-	if(gperftools)
-		message(${gperftools})
-		target_link_libraries(common ${gperftools} tcmalloc unwind)
-	endif()
-endif()
+# if(UNIX)
+# 	FIND_LIBRARY(gperftools profiler)
+# 	if(gperftools)
+# 		message("find gperftools: " ${gperftools})
+# 		target_link_libraries(common ${gperftools} tcmalloc unwind)
+# 	endif()
+# endif()

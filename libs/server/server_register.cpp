@@ -2,7 +2,7 @@
 #include "common.h"
 #include "socket_tcp.h"
 #include "server_base.h"
-#include "commonprotobuf.h"
+#include "ss/private_server_command.pb.h"
 
 namespace CHServer {
 

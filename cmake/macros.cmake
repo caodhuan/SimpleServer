@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.2)
 
 # 可以使用文件夹
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -16,7 +16,7 @@ endmacro()
 macro(addlib name path)
 	file(GLOB_RECURSE files ${path}/*)
 	add_library(${name} ${files})
-	set_target_properties(${name} PROPERTIES UNITY_BUILD ON)
+	#set_target_properties(${name} PROPERTIES UNITY_BUILD ON)
 	include_directories(${path})
 	add2group(${name})
 endmacro()

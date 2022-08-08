@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.2)
 
 group(server)
 	addexec(db_server ${CMAKE_CURRENT_SOURCE_DIR}/src/db)
