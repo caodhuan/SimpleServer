@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
+
 add_definitions(-DUNICODE -D_UNICODE
 	-D_CRT_SECURE_NO_DEPRECATE
 	-D_CRT_NONSTDC_NO_DEPRECATE

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
 
 project(CHServer)
 
@@ -8,7 +8,6 @@ if(NOT WIN32)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -std=c++2a -g")
 endif()
 
-include(cotire)
 include(macros)
 include(3rd)
 include(libs)
@@ -22,45 +21,6 @@ group(test)
 	addexec(redis_test ${CMAKE_CURRENT_SOURCE_DIR}/src/test/redis_test)
 endgroup()
 
-
-if(WIN32)
-	set(lib_path ${CMAKE_CURRENT_SOURCE_DIR}/3rd/mysql/win)
-	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi /Od /Oy- /MD ") #mysqlclient只能是MD  ？
-	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Zi /Od /Oy- /MTd")	
-	set(mysqlclient_lib 
-		optimized ${lib_path}/lib/mysqlclient.lib
-		debug ${lib_path}/lib/libmysql.lib)
-
-	file(COPY ${lib_path}/lib/libmysql.dll DESTINATION ${CMAKE_WORKING_DIRECTORY}/)
-	file(COPY ${lib_path}/lib/libmysql.dll DESTINATION ${PROJECT_BINARY_DIR}/Debug)
-
-	foreach(project ${group_proj})
-		target_link_libraries(${project} ${mysqlclient_lib})
-
-		target_link_libraries(${project} ws2_32.lib Psapi.lib IPHLPAPI.lib userenv.lib)
-
-	endforeach()
-	
-
-	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/3rd/hiredis/windows)
-
-else()
-	set(lib_path ${CMAKE_CURRENT_SOURCE_DIR}/3rd/mysql/linux)
-
-  	find_library(mysqlclient_lib mysqlclient)
-
-    if(NOT mysqlclient_lib)
-    	message(STATUS "mysqlclient NOT found")
-		file(GLOB mysqlclient_lib ${lib_path}/lib/libmysqlclient.a)
-    endif()
-
-    foreach(project ${group_proj})
-    	target_link_libraries(${project} ${mysqlclient_lib} pthread dl )
-    endforeach()
-
-	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/3rd/hiredis/linux)
-
-endif()
 
 include_directories(${lib_path}/include)
 include_directories(

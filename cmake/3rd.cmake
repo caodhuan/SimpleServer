@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
+
 # 添加protobuf
 file(GLOB pb ${CMAKE_CURRENT_SOURCE_DIR}/3rd/protobuf/cmake/*)
 if(pb)

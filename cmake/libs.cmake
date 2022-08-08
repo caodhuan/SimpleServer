@@ -1,4 +1,4 @@
-
+cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
 # proto文件相关
 # 先删除掉生成的文件，如果有的话
 file(GLOB_RECURSE REMOVED
@@ -67,6 +67,36 @@ group(base)
 	target_link_libraries(protos libprotobuf) 
 	target_link_libraries(server resource network protos db common) 
 endgroup()
+
+
+if(WIN32)
+	set(lib_path ${CMAKE_CURRENT_SOURCE_DIR}/3rd/mysql/win)
+	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi /Od /Oy- /MD ") #mysqlclient只能是MD  ？
+	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Zi /Od /Oy- /MTd")	
+	set(mysqlclient_lib 
+		optimized ${lib_path}/lib/mysqlclient.lib
+		debug ${lib_path}/lib/libmysql.lib)
+
+	file(COPY ${lib_path}/lib/libmysql.dll DESTINATION ${CMAKE_WORKING_DIRECTORY}/)
+	file(COPY ${lib_path}/lib/libmysql.dll DESTINATION ${PROJECT_BINARY_DIR}/Debug)
+
+	target_link_libraries(db ws2_32.lib Psapi.lib IPHLPAPI.lib userenv.lib)
+	
+	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/3rd/hiredis/windows)
+
+else()
+
+	set(lib_path ${CMAKE_CURRENT_SOURCE_DIR}/3rd/mysql/linux)
+
+	file(GLOB mysqlclient_lib ${lib_path}/lib/libmysqlclient.a)
+
+	target_link_libraries(db pthread dl )
+
+	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/3rd/hiredis/linux)
+
+endif()
+
+target_link_libraries(db ${mysqlclient_lib})
 
 # 增加custom build
 add_custom_command(TARGET protos PRE_BUILD 
