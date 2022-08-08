@@ -62,7 +62,7 @@ void TestLibuv() {
 
         std::string tmp;
         tmp.assign(ptr, readLen);
-        CHERRORLOG(tmp.c_str());
+        error_log(tmp.c_str());
         //
         // 		if (readLen < len) {
         // 			client->RemoveBuff(readLen);
@@ -103,7 +103,7 @@ void TestLibuv100000() {
     //
     // 			std::string tmp;
     // 			tmp.assign(ptr, readLen);
-    // 			CHERRORLOG(tmp.c_str());
+    // 			error_log(tmp.c_str());
     // 			//
     // 			// 		if (readLen < len) {
     // 			// 			client->RemoveBuff(readLen);

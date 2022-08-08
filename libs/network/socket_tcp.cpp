@@ -8,9 +8,9 @@ namespace CHServer {
 SocketTCP::SocketTCP(EventDispatcher* dispatcher) : SocketBase(dispatcher) {}
 
 SocketTCP::~SocketTCP() {
-  CHDEBUGLOG("socket deleted");
+  debug_log("socket deleted");
   // if (m_handle) {
-  // 	CHERRORLOG("m_handle is still alive on destructor!");
+  // 	error_log("m_handle is still alive on destructor!");
   // 	delete m_handle;
   // 	m_handle = NULL;
   // }
@@ -73,7 +73,7 @@ void SocketTCP::Listen(const char* ip, int32_t port) {
 
   // 	int result = uv_tcp_bind(m_handle, (const struct sockaddr*) &addr, 0);
   // 	if (result) {
-  // 		CHERRORLOG("bind error");
+  // 		error_log("bind error");
   // 		return;
   // 	}
 
@@ -81,12 +81,12 @@ void SocketTCP::Listen(const char* ip, int32_t port) {
   // SocketBase::OnNewConnection);
 
   // 	if (result) {
-  // 		CHERRORLOG("listen error");
+  // 		error_log("listen error");
   // 		Close();
   // 		return;
   // 	}
 
-  // 	CHWARNINGLOG("listen on %s, %d", ip, port);
+  // 	warning_log("listen on %s, %d", ip, port);
 }
 
 SocketTCP* SocketTCP::Accept() {

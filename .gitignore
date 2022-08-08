@@ -1,6 +1,7 @@
 libs/protos/commonprotobuf.h
 libs/protos/*/*.pb.h
 libs/protos/*/*.pb.cc
+libs/protos/include
 .vscode/
 .protobuf_build/
 libs/protos/protoc

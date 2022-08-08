@@ -32,21 +32,21 @@ RedisAsync::~RedisAsync() {
 bool RedisAsync::Connect(const char* ip, const int32_t port,
                          EventDispatcher* dispatcher) {
   if (!dispatcher) {
-    CHERRORLOG("dispatcher is null");
+    error_log("dispatcher is null");
     return false;
   }
 
   m_context = redisAsyncConnect(ip, port);
 
   if (!m_context || m_context->err) {
-    CHERRORLOG(m_context->errstr);
+    error_log(m_context->errstr);
     return false;
   }
 
   m_context->ev.data = this;
 
   if (RedisAttach(m_context, dispatcher) != REDIS_OK) {
-    CHERRORLOG("attach error!");
+    error_log("attach error!");
     return false;
   }
 
@@ -80,18 +80,18 @@ void RedisAsync::Command(RedisAsyncCommandCallback callback, int argc,
 
 void RedisAsync::AddCallback(int32_t key, RedisAsyncCommandCallback callback) {
   if (m_callbacks.find(key) != m_callbacks.end()) {
-    CHERRORLOG("to many commands!");
+    error_log("to many commands!");
   }
 
   m_callbacks.insert(std::make_pair(key, callback));
 }
 
 void RedisAsync::OnConnectCallback(const redisAsyncContext* c, int status) {
-  CHDEBUGLOG("OnConnectCallback status = %d", status);
+  debug_log("OnConnectCallback status = %d", status);
 }
 
 void RedisAsync::OnDisconnectCallback(const redisAsyncContext* c, int status) {
-  CHDEBUGLOG("OnDisconnectCallback status = %d", status);
+  debug_log("OnDisconnectCallback status = %d", status);
 }
 
 void RedisAsync::OnCmdCallback(redisAsyncContext* c, void* r,
@@ -109,8 +109,8 @@ void RedisAsync::OnCmdCallback(redisAsyncContext* c, void* r,
   }
 
   redisReply* reply = (redisReply*)r;
-  CHWARNINGLOG("thread ID = %lu, result = %s", std::this_thread::get_id(),
-               reply->str);
+  warning_log("thread ID = %lu, result = %s", std::this_thread::get_id(),
+              reply->str);
 }
 
 int RedisAsync::RedisAttach(redisAsyncContext* context,
