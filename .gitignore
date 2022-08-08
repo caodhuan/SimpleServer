@@ -3,3 +3,4 @@ libs/protos/*/*.pb.h
 libs/protos/*/*.pb.cc
 .vscode/
 Build/
+build/

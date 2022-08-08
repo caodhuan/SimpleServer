@@ -19,14 +19,14 @@ group(test)
 	addexec(server_test ${CMAKE_CURRENT_SOURCE_DIR}/src/test/server_test)
 
 	addexec(redis_test ${CMAKE_CURRENT_SOURCE_DIR}/src/test/redis_test)
-endgroup()
 
+	addexec(test ${CMAKE_CURRENT_SOURCE_DIR}/src/test/test)
+endgroup()
 
 include_directories(${lib_path}/include)
 include_directories(
 	3rd/libuv/include
 	3rd/libuv/src)
-
 
 target_link_libraries(client_test server) 
 

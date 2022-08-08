@@ -101,4 +101,10 @@ target_link_libraries(db ${mysqlclient_lib})
 # 增加custom build
 add_custom_command(TARGET protos PRE_BUILD 
 	COMMAND protoc ${PROTO} -I=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/ --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/
-	)
+)
+
+find_package(Boost 1.75.0 REQUIRED) 
+if(Boost_FOUND)
+	message("boost include and lib dirs: " ${Boost_INCLUDE_DIRS} ", " ${Boost_LIBRARY_DIRS})
+	include_directories(${Boost_INCLUDE_DIRS})
+endif()
