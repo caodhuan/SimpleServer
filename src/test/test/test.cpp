@@ -1,76 +1,122 @@
 //
-// echo_server.cpp
-// ~~~~~~~~~~~~~~~
+// reference_counted.cpp
+// ~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#include <boost/asio/co_spawn.hpp>
-#include <boost/asio/detached.hpp>
-#include <boost/asio/io_context.hpp>
-#include <boost/asio/ip/tcp.hpp>
-#include <boost/asio/signal_set.hpp>
-#include <boost/asio/write.hpp>
-#include <cstdio>
+#include <boost/asio.hpp>
+#include <iostream>
+#include <memory>
+#include <utility>
+#include <vector>
+#include <ctime>
 
 using boost::asio::ip::tcp;
-using boost::asio::awaitable;
-using boost::asio::co_spawn;
-using boost::asio::detached;
-using boost::asio::use_awaitable;
-namespace this_coro = boost::asio::this_coro;
 
-#if defined(BOOST_ASIO_ENABLE_HANDLER_TRACKING)
-# define use_awaitable \
-  boost::asio::use_awaitable_t(__FILE__, __LINE__, __PRETTY_FUNCTION__)
-#endif
+// A reference-counted non-modifiable buffer class.
+class shared_const_buffer
+{
+public:
+  // Construct from a std::string.
+  explicit shared_const_buffer(const std::string& data)
+    : data_(new std::vector<char>(data.begin(), data.end())),
+      buffer_(boost::asio::buffer(*data_))
+  {
+  }
 
-awaitable<void> echo(tcp::socket socket)
+  // Implement the ConstBufferSequence requirements.
+  typedef boost::asio::const_buffer value_type;
+  typedef const boost::asio::const_buffer* const_iterator;
+  const boost::asio::const_buffer* begin() const { return &buffer_; }
+  const boost::asio::const_buffer* end() const { return &buffer_ + 1; }
+
+private:
+  std::shared_ptr<std::vector<char> > data_;
+  boost::asio::const_buffer buffer_;
+};
+
+class session
+  : public std::enable_shared_from_this<session>
+{
+public:
+  session(tcp::socket socket)
+    : socket_(std::move(socket))
+  {
+  }
+
+  void start()
+  {
+    do_write();
+  }
+
+private:
+  void do_write()
+  {
+    std::time_t now = std::time(0);
+    shared_const_buffer buffer(std::ctime(&now));
+
+    auto self(shared_from_this());
+    boost::asio::async_write(socket_, buffer,
+        [self](boost::system::error_code /*ec*/, std::size_t /*length*/)
+        {
+        });
+  }
+
+  // The socket used to communicate with the client.
+  tcp::socket socket_;
+};
+
+class server
+{
+public:
+  server(boost::asio::io_context& io_context, short port)
+    : acceptor_(io_context, tcp::endpoint(tcp::v4(), port))
+  {
+    do_accept();
+  }
+
+private:
+  void do_accept()
+  {
+    acceptor_.async_accept(
+        [this](boost::system::error_code ec, tcp::socket socket)
+        {
+          if (!ec)
+          {
+            std::make_shared<session>(std::move(socket))->start();
+          }
+
+          do_accept();
+        });
+  }
+
+  tcp::acceptor acceptor_;
+};
+
+int main(int argc, char* argv[])
 {
   try
   {
-    char data[1024];
-    for (;;)
+    if (argc != 2)
     {
-      std::size_t n = co_await socket.async_read_some(boost::asio::buffer(data), use_awaitable);
-      co_await async_write(socket, boost::asio::buffer(data, n), use_awaitable);
+      std::cerr << "Usage: reference_counted <port>\n";
+      return 1;
     }
-  }
-  catch (std::exception& e)
-  {
-    std::printf("echo Exception: %s\n", e.what());
-  }
-}
 
-awaitable<void> listener()
-{
-  auto executor = co_await this_coro::executor;
-  tcp::acceptor acceptor(executor, {tcp::v4(), 55555});
-  for (;;)
-  {
-    tcp::socket socket = co_await acceptor.async_accept(use_awaitable);
-    co_spawn(executor, echo(std::move(socket)), detached);
-  }
-}
+    boost::asio::io_context io_context;
 
-int main()
-{
-  try
-  {
-    boost::asio::io_context io_context(1);
-
-    boost::asio::signal_set signals(io_context, SIGINT, SIGTERM);
-    signals.async_wait([&](auto, auto){ io_context.stop(); });
-
-    co_spawn(io_context, listener(), detached);
+    server s(io_context, std::atoi(argv[1]));
 
     io_context.run();
   }
   catch (std::exception& e)
   {
-    std::printf("Exception: %s\n", e.what());
+    std::cerr << "Exception: " << e.what() << "\n";
   }
+
+  return 0;
 }

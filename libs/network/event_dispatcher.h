@@ -1,4 +1,5 @@
 #pragma once
+#include <boost/asio.hpp>
 
 namespace CHServer {
 
@@ -7,9 +8,7 @@ class EventDispatcher {
   EventDispatcher();
   ~EventDispatcher();
 
-  // uv_loop_t* GetLoop() {
-  // 	return m_loop;
-  // }
+  boost::asio::io_context* GetContext() { return m_io_context; }
 
   void Run(int type = 0 /*= uv_run_mode::UV_RUN_DEFAULT*/);
 
@@ -18,6 +17,6 @@ class EventDispatcher {
   void BreakRun();
 
  private:
-  // uv_loop_t* m_loop;
+  boost::asio::io_context* m_io_context;
 };
 }  // namespace CHServer
