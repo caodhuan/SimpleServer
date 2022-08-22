@@ -5,7 +5,6 @@
 #include "log.h"
 #include "resource _manager.h"
 #include "session.h"
-#include "socket_tcp.h"
 #include "timer_factory.h"
 
 namespace CHServer {
@@ -46,30 +45,6 @@ bool ServerBase::Initilize(const char* path, const char* tableName) {
 
   TimerFactory::Instance()->InitTimerFactory(m_dispatcher);
 
-  m_Server = new SocketTCP(m_dispatcher);
-
-  m_Server->SetCallback(
-      nullptr,
-      [&] {
-        SocketTCP* tcpClient = m_Server->Accept();
-
-        Session* session = CreateSession(tcpClient);
-
-        debug_log("new client connected %s:%d", tcpClient->GetIP().c_str(),
-                  tcpClient->GetPort());
-      },
-      [&] {
-        // 这里目前没搞清楚为啥delete后，会造成this变量变得不可访问。
-        SocketBase* tmp = m_Server;
-        m_Server = nullptr;
-
-        warning_log("before delete %ld", this);
-
-        delete tmp;
-
-        warning_log("after delete %ld", this);
-      });
-
   int32_t internalPort;
   std::string internalIP;
 
@@ -89,7 +64,6 @@ bool ServerBase::Initilize(const char* path, const char* tableName) {
     return false;
   }
 
-  m_Server->Listen(internalIP.c_str(), internalPort);
 
   return AfterInitilize();
 }
@@ -104,7 +78,6 @@ void ServerBase::Finalize() {
 
   AfterFinalize();
 
-  CHLog::Instance()->UninitLog();
 }
 
 void ServerBase::Run() { m_dispatcher->Run(); }

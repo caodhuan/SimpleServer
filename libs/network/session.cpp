@@ -4,15 +4,10 @@
 
 #include "log.h"
 #include "server_base.h"
-#include "socket_tcp.h"
 
 namespace CHServer {
 
-Session::Session(SocketBase* socket) : m_socket(socket), m_head() {
-  m_socket->SetCallback(std::bind(&Session::OnConnected, this),
-                        std::bind(&Session::OnReceive, this),
-                        std::bind(&Session::OnClosed, this));
-}
+Session::Session(SocketBase* socket) : m_socket(socket), m_head() {}
 
 Session::~Session() {}
 
@@ -33,30 +28,6 @@ void Session::SendPacket(uint16_t cmd, const char* data, uint16_t len) {
 void Session::OnReceive() {
   error_log("received");
   while (true) {
-    int32_t dataLen = m_socket->GetDataLength();
-
-    char* data = NULL;
-    m_socket->ReadBuff(data);
-
-    if (!m_head.totalLength) {
-      if (dataLen < sizeof(m_head)) {
-        break;
-      }
-      m_head = *(PacketHeader*)data;
-    }
-    m_head.NetworkToHost();
-
-    if (m_head.totalLength > m_socket->GetDataLength()) {
-      break;
-    }
-
-    if (!ProcessData(data + sizeof(m_head),
-                     m_head.totalLength - sizeof(m_head))) {
-      // 关闭连接，打日志
-      m_socket->Close();
-    }
-
-    m_socket->RemoveBuff(m_head.totalLength);
     m_head.totalLength = 0;
   }
 }
@@ -84,11 +55,10 @@ bool Session::ProcessData(const char* data, uint16_t len) {
 
 void Session::Close() {
   if (m_socket) {
-    m_socket->Close();
   }
 }
 
-bool Session::IsClosed() { return m_socket ? m_socket->IsClosed() : true; }
+bool Session::IsClosed() { return true; }
 
 bool Session::RegisterProcedure(uint16_t cmd, MESSAGEPROCEDURE procedure) {
   MESSAGEPROCEDURE hadProcedure = FindProcedure(cmd);
@@ -111,9 +81,7 @@ void Session::OnSessionConnected() {}
 
 void Session::OnSessionDisconnect() {}
 
-void Session::Send(const char* data, uint16_t len) {
-  m_socket->Send(data, len);
-}
+void Session::Send(const char* data, uint16_t len) {}
 
 MESSAGEPROCEDURE Session::FindProcedure(uint16_t cmd) {
   std::map<uint16_t, MESSAGEPROCEDURE>::iterator iter =

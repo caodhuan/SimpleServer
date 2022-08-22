@@ -1,26 +1,13 @@
 #pragma once
-#include <atomic>
-#include <mutex>
-#include <thread>
-
-#include "blockingqueue.h"
 #include "singleton.h"
 
 namespace CHServer {
 
-#define error_log(msg, ...)                                              \
-  CHLog::Instance()->Log(__FILE__, __LINE__, CHLog::LOGLEVEL_ERROR, msg, \
-                         ##__VA_ARGS__);
-#define debug_log(msg, ...)                                              \
-  CHLog::Instance()->Log(__FILE__, __LINE__, CHLog::LOGLEVEL_DEBUG, msg, \
-                         ##__VA_ARGS__);
-#define warning_log(msg, ...)                                              \
-  CHLog::Instance()->Log(__FILE__, __LINE__, CHLog::LOGLEVEL_WARNING, msg, \
-                         ##__VA_ARGS__);
+#define error_log(msg, ...)
+#define debug_log(msg, ...)
+#define warning_log(msg, ...)
 
-struct LogData {
-  std::string data[4];
-};
+enum log_level { trace, debug, info, warning, error, fatal };
 
 // 日志相关
 // 线程安全的
@@ -28,39 +15,10 @@ class CHLog : public Singleton<CHLog> {
  public:
   ~CHLog();
 
-  enum LOGLEVEL {
-    LOGLEVEL_ERROR = 0,
-    LOGLEVEL_DEBUG = 1,
-    LOGLEVEL_WARNING = 2,
-  };
-
  public:
   bool InitLog(const char* path, const char* fileNamePrefix);
 
-  void UninitLog();
-
-  void Log(const char* fileName, uint32_t lineNum, LOGLEVEL logLevel,
-           const char* msg, ...);
-
- private:
-  void DoLog();
-
-  // static void PrepareFile(const char* path, const char* prefix, uint32_t&
-  // day, uv_fs_t& fileHandle);
-
-  // static void OpenFile(char* fileName, uv_fs_t& fileHandle);
-
-  // static void FormatTime(char* formatTime, int32_t size, uint32_t&
-  // lastSecond);
- private:
-  BlockingQueue<LogData> m_logData;  // 考虑换 T
-
-  std::mutex m_mutex;
-  std::atomic_bool m_exit;
-  std::thread m_thread;
-
-  std::string m_path;            // init之外，都是readonly
-  std::string m_fileNamePrefix;  // init之外，都是readonly
+  void UpdateLogLevel(log_level level);
 
  private:
   friend class Singleton<CHLog>;
