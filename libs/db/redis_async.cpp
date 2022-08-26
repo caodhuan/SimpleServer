@@ -1,6 +1,5 @@
 #include "redis_async.h"
 
-#include "event_dispatcher.h"
 #include "log.h"
 
 extern "C" {
@@ -22,7 +21,7 @@ RedisAsync::RedisAsync() : m_context(nullptr), m_events(0) {}
 RedisAsync::~RedisAsync() {
   if (m_context) {
     redisAsyncFree(m_context);
-    m_context = NULL;
+    m_context = nullptr;
   }
 
   // 在OnClose里delete m_poll

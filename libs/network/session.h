@@ -1,91 +1,83 @@
 #pragma once
 
 #include <stdint.h>
-#include <vector>
-#include <map>
-#include <functional>
 
-#ifdef WIN32 
+#include <functional>
+#include <map>
+#include <vector>
+
+#ifdef WIN32
 #include <WinSock2.h>
 #else
 #include <netinet/in.h>
 #endif
 
-
 namespace CHServer {
-	class EventDispatcher;
-	class SocketBase;
-	class Channel;
+class SocketBase;
+class Channel;
 
-	typedef std::function<bool(const char*, uint16_t)>  MESSAGEPROCEDURE;
+typedef std::function<bool(const char*, uint16_t)> MESSAGEPROCEDURE;
 
-	struct PacketHeader {
-		PacketHeader()
-			: totalLength(0)
-			, cmd(0) {
-		}
+struct PacketHeader {
+  PacketHeader() : totalLength(0), cmd(0) {}
 
-		void HostToNetwork() {
-			totalLength = htons(totalLength);
-			cmd = htons(cmd);
-		}
+  void HostToNetwork() {
+    totalLength = htons(totalLength);
+    cmd = htons(cmd);
+  }
 
-		void NetworkToHost() {
-			totalLength = ntohs(totalLength);
-			cmd = ntohs(cmd);
-		}
+  void NetworkToHost() {
+    totalLength = ntohs(totalLength);
+    cmd = ntohs(cmd);
+  }
 
-		uint16_t totalLength;
-		uint16_t cmd;
+  uint16_t totalLength;
+  uint16_t cmd;
+};
 
-	};
+// 代表一个会话抽象
+class Session {
+ public:
+  Session(SocketBase* socket);
+  virtual ~Session();
 
-	// 代表一个会话抽象
-	class Session {
-	public:
-		Session(SocketBase* socket);
-		virtual ~Session();
+ public:
+  // 发送数据
+  void SendPacket(uint16_t cmd, const char* data, uint16_t len);
 
-	public:
+  SocketBase* GetSocket() { return m_socket; }
 
-		// 发送数据
-		void SendPacket(uint16_t cmd, const char* data, uint16_t len);
+  void Close();
 
-		SocketBase* GetSocket() {
-			return m_socket;
-		}
+  bool IsClosed();
 
-		void Close();
+  bool RegisterProcedure(uint16_t cmd, MESSAGEPROCEDURE procedure);
 
-		bool IsClosed();
+  void UnregisterProcedure(uint16_t cmd);
 
-		bool RegisterProcedure(uint16_t cmd, MESSAGEPROCEDURE procedure);
+ public:
+  virtual void OnSessionConnected();
 
-		void UnregisterProcedure(uint16_t cmd);
+  virtual void OnSessionDisconnect();
 
-	public:
-		virtual void OnSessionConnected();
+ private:
+  void OnConnected();
 
-		virtual void OnSessionDisconnect();
+  // 处理接收数据
+  void OnReceive();
 
-	private:
+  void OnClosed();
 
-		void OnConnected();
+  bool ProcessData(const char* data, uint16_t len);
 
-		// 处理接收数据
-		void OnReceive();
+  void Send(const char* data, uint16_t len);
 
-		void OnClosed();
+  MESSAGEPROCEDURE FindProcedure(uint16_t cmd);
 
-		bool ProcessData(const char* data, uint16_t len);
+ protected:
+  SocketBase* m_socket;
+  PacketHeader m_head;  // 包头
 
-		void Send(const char* data, uint16_t len);
-
-		MESSAGEPROCEDURE FindProcedure(uint16_t cmd);
-	protected:
-		SocketBase* m_socket;
-		PacketHeader m_head; // 包头
-
-		std::map<uint16_t, MESSAGEPROCEDURE> m_procedures;
-	};
-}
+  std::map<uint16_t, MESSAGEPROCEDURE> m_procedures;
+};
+}  // namespace CHServer

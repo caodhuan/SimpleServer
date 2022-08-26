@@ -1,27 +1,20 @@
 #include "server_base.h"
 
 #include "config.h"
-#include "event_dispatcher.h"
 #include "log.h"
 #include "resource _manager.h"
 #include "session.h"
-#include "timer_factory.h"
 
 namespace CHServer {
 template <>
 ServerBase* SingletonInheritable<ServerBase>::m_Instance = 0;
 
-ServerBase::ServerBase() : m_dispatcher(NULL), m_Server(NULL) {}
+ServerBase::ServerBase() : m_io_context() {}
 
 ServerBase::~ServerBase() {}
 
 bool ServerBase::Initilize(const char* path, const char* tableName) {
   if (!BeforeInitilize()) {
-    return false;
-  }
-
-  if (m_dispatcher) {
-    error_log("reinitilzed");
     return false;
   }
 
@@ -40,10 +33,6 @@ bool ServerBase::Initilize(const char* path, const char* tableName) {
     error_log("log initialize failed!");
     return false;
   }
-
-  m_dispatcher = new EventDispatcher();
-
-  TimerFactory::Instance()->InitTimerFactory(m_dispatcher);
 
   int32_t internalPort;
   std::string internalIP;
@@ -64,21 +53,15 @@ bool ServerBase::Initilize(const char* path, const char* tableName) {
     return false;
   }
 
-
   return AfterInitilize();
 }
 
 void ServerBase::Finalize() {
   BeforeFinalize();
 
-  if (m_dispatcher) {
-    delete m_dispatcher;
-    m_dispatcher = NULL;
-  }
-
   AfterFinalize();
-
 }
 
-void ServerBase::Run() { m_dispatcher->Run(); }
+void ServerBase::Run() { m_io_context.run(); }
+
 }  // namespace CHServer

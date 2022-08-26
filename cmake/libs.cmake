@@ -54,6 +54,6 @@ target_link_libraries(db ${mysqlclient_lib})
 
 find_package(Boost 1.74.0 REQUIRED) 
 if(Boost_FOUND)
-	message("boost include and lib dirs: " ${Boost_INCLUDE_DIRS} ", " ${Boost_LIBRARY_DIRS})
-	include_directories(${Boost_INCLUDE_DIRS})
+	message("boost include and lib dirs: " ${Boost_INCLUDE_DIR} ", ")
+	include_directories(${Boost_INCLUDE_DIR})
 endif()
