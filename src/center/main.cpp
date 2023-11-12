@@ -1,15 +1,14 @@
 #include "center_server.h"
 
-using namespace CHServer;
+using namespace SimpleServer;
 int main() {
+  if (!CenterServer::Instance()->Initilize()) {
+    return false;
+  }
 
-	if (!CenterServer::Instance()->Initilize()) {
-		return false;
-	}
+  CenterServer::Instance()->Run();
 
-	CenterServer::Instance()->Run();
+  CenterServer::Instance()->Finalize();
 
-	CenterServer::Instance()->Finalize();
-
-	return 0;
+  return 0;
 }

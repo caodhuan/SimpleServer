@@ -7,7 +7,7 @@
 
 struct redisAsyncContext;
 
-namespace CHServer {
+namespace SimpleServer {
 
 class EventDispatcher;
 
@@ -39,14 +39,14 @@ class RedisAsync {
  private:
   static int RedisAttach(redisAsyncContext* context,
                          EventDispatcher* dispatcher);
-  //static void RedisPoll(uv_poll_t* handle, int status, int events);
+  // static void RedisPoll(uv_poll_t* handle, int status, int events);
   static void RedisAddRead(void* privateData);
   static void RedisDelRead(void* privateData);
   static void RedisAddWrite(void* privateData);
   static void RedisDelWrite(void* privateData);
   static void RedisCleanup(void* privateData);
 
-  //static void OnClose(uv_handle_t* handle);
+  // static void OnClose(uv_handle_t* handle);
 
  private:
   RedisAsync();
@@ -56,10 +56,10 @@ class RedisAsync {
  private:
   redisAsyncContext* m_context;
 
-  //uv_poll_t* m_poll;
+  // uv_poll_t* m_poll;
   int m_events;
 
  private:
   std::map<int32_t, RedisAsyncCommandCallback> m_callbacks;
 };
-}  // namespace CHServer
+}  // namespace SimpleServer

@@ -5,7 +5,7 @@
 #include "my_server.h"
 #include "socket_tcp.h"
 
-using namespace CHServer;
+using namespace SimpleServer;
 int main() {
   if (MyServer::Instance()->Initilize("./res/config.lua", "tServer")) {
     MyServer::Instance()->Run();

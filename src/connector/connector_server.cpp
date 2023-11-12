@@ -1,27 +1,15 @@
 #include "connector_server.h"
 
-namespace CHServer {
-	static ConnectorServer server;
-	bool ConnectorServer::BeforeInitilize() {
+namespace SimpleServer {
+static ConnectorServer server;
+bool ConnectorServer::BeforeInitilize() { return true; }
 
-		return true;
-	}
+bool ConnectorServer::AfterInitilize() { return true; }
 
-	bool ConnectorServer::AfterInitilize() {
+void ConnectorServer::BeforeFinalize() {}
 
-		return true;
-	}
+void ConnectorServer::AfterFinalize() {}
 
-	void ConnectorServer::BeforeFinalize() {
-		
-	}
+Session* ConnectorServer::CreateSession(SocketBase* socket) { return nullptr; }
 
-	void ConnectorServer::AfterFinalize() {
-		
-	}
-
-	Session* ConnectorServer::CreateSession(SocketBase* socket) {
-		return nullptr;
-	}
-
-}
+}  // namespace SimpleServer

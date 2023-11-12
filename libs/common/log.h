@@ -1,7 +1,7 @@
 #pragma once
 #include "singleton.h"
 
-namespace CHServer {
+namespace SimpleServer {
 
 #define error_log(msg, ...)
 #define debug_log(msg, ...)
@@ -25,4 +25,4 @@ class CHLog : public Singleton<CHLog> {
 
   CHLog();
 };
-}  // namespace CHServer
+}  // namespace SimpleServer

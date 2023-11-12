@@ -2,7 +2,7 @@
 
 #include "log.h"
 
-namespace CHServer {
+namespace SimpleServer {
 
 static int INVALID_STACK_POS = -1;
 
@@ -36,4 +36,4 @@ bool Config::DoReadTable(const char* name, std::vector<std::string>& values) {
   return true;
 }
 
-}  // namespace CHServer
+}  // namespace SimpleServer

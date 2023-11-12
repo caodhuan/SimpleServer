@@ -5,7 +5,7 @@
 #include "log.h"
 #include "server_base.h"
 
-namespace CHServer {
+namespace SimpleServer {
 
 Session::Session(SocketBase* socket) : m_socket(socket), m_head() {}
 
@@ -92,4 +92,4 @@ MESSAGEPROCEDURE Session::FindProcedure(uint16_t cmd) {
   return nullptr;
 }
 
-}  // namespace CHServer
+}  // namespace SimpleServer

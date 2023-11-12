@@ -3,7 +3,7 @@
 #include "hiredis.h"
 #include "log.h"
 
-namespace CHServer {
+namespace SimpleServer {
 
 RedisSync::RedisSync() : m_context(nullptr) {}
 
@@ -41,4 +41,4 @@ redisReply* RedisSync::Command(int argc, const char** argv,
   return reply;
 }
 
-}  // namespace CHServer
+}  // namespace SimpleServer

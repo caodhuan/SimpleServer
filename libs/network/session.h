@@ -12,7 +12,7 @@
 #include <netinet/in.h>
 #endif
 
-namespace CHServer {
+namespace SimpleServer {
 class SocketBase;
 class Channel;
 
@@ -80,4 +80,4 @@ class Session {
 
   std::map<uint16_t, MESSAGEPROCEDURE> m_procedures;
 };
-}  // namespace CHServer
+}  // namespace SimpleServer

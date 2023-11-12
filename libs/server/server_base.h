@@ -5,7 +5,7 @@
 
 #include "singleton.h"
 
-namespace CHServer {
+namespace SimpleServer {
 class Session;
 class SocketBase;
 
@@ -34,4 +34,4 @@ class ServerBase : public SingletonInheritable<ServerBase> {
  private:
   boost::asio::io_context m_io_context;
 };
-}  // namespace CHServer
+}  // namespace SimpleServer

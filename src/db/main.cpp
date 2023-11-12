@@ -1,14 +1,13 @@
 #include "db_server.h"
 
-using namespace CHServer;
+using namespace SimpleServer;
 
 int main() {
+  if (DBServer::Instance()->Initilize()) {
+    DBServer::Instance()->Run();
+  }
 
-	if (DBServer::Instance()->Initilize()) {
-		DBServer::Instance()->Run();
-	}
+  DBServer::Instance()->Finalize();
 
-	DBServer::Instance()->Finalize();
-
-	return 0;
+  return 0;
 }

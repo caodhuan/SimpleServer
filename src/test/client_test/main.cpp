@@ -15,7 +15,7 @@
 #include "socket_tcp.h"
 #include "ss/common.pb.h"
 using namespace std;
-using namespace CHServer;
+using namespace SimpleServer;
 
 void TestMysql() {
   cout << "test mysql" << endl;

@@ -13,7 +13,7 @@ extern "C" {
 
 #include <functional>
 
-namespace CHServer {
+namespace SimpleServer {
 static int32_t CallbackIndex = 0;
 
 RedisAsync::RedisAsync() : m_context(nullptr), m_events(0) {}
@@ -195,4 +195,4 @@ void RedisAsync::RedisCleanup(void* privateData) {
 
 // void RedisAsync::OnClose(uv_handle_t* handle) { delete handle; }
 
-}  // namespace CHServer
+}  // namespace SimpleServer

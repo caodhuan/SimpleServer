@@ -11,7 +11,7 @@ namespace src = boost::log::sources;
 namespace sinks = boost::log::sinks;
 namespace keywords = boost::log::keywords;
 
-namespace CHServer {
+namespace SimpleServer {
 
 CHLog::CHLog() {}
 
@@ -34,4 +34,4 @@ void CHLog::UpdateLogLevel(log_level level) {
   logging::core::get()->set_filter(logging::trivial::severity >= level);
 }
 
-}  // namespace CHServer
+}  // namespace SimpleServer

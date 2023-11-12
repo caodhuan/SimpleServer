@@ -1,23 +1,16 @@
 #include "redis_factory.h"
+
 #include "redis_async.h"
 #include "redis_sync.h"
 
-namespace CHServer {
+namespace SimpleServer {
 
-	RedisAsync* RedisFactory::CreateRedisAsync() {
-		return new RedisAsync();
-	}
+RedisAsync* RedisFactory::CreateRedisAsync() { return new RedisAsync(); }
 
-	RedisSync* RedisFactory::CreateRedisSync() {
-		return new RedisSync();
-	}
+RedisSync* RedisFactory::CreateRedisSync() { return new RedisSync(); }
 
-	void RedisFactory::DeleteRedisAsync(RedisAsync* redis) {
-		delete redis;
-	}
+void RedisFactory::DeleteRedisAsync(RedisAsync* redis) { delete redis; }
 
-	void RedisFactory::DeleteRedisSync(RedisSync* redis) {
-		delete redis;
-	}
+void RedisFactory::DeleteRedisSync(RedisSync* redis) { delete redis; }
 
-}
+}  // namespace SimpleServer

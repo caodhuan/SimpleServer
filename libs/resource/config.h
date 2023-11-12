@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-namespace CHServer {
+namespace SimpleServer {
 // 读取服务器配置
 // 一个Config代表一组配置，每组配置用table来表示
 // TODO: 索引表该如何读出？
@@ -51,4 +51,4 @@ class Config {
 
   int m_stackPos;
 };
-}  // namespace CHServer
+}  // namespace SimpleServer

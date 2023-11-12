@@ -1,21 +1,22 @@
 #pragma once
 #include "singleton.h"
 
-namespace CHServer {
-	class Config;
+namespace SimpleServer {
+class Config;
 
-	class ResourceManager : public Singleton<ResourceManager> {
-	public:
-		ResourceManager();
-		~ResourceManager();
-	
-	public:
-		bool Initialize(const char* path = nullptr, const char* tableName = nullptr);
+class ResourceManager : public Singleton<ResourceManager> {
+ public:
+  ResourceManager();
+  ~ResourceManager();
 
-		void Finalize();
+ public:
+  bool Initialize(const char* path = nullptr, const char* tableName = nullptr);
 
-		Config* GetConfig() { return m_config; }
-	private:
-		Config* m_config;
-	};
-}
+  void Finalize();
+
+  Config* GetConfig() { return m_config; }
+
+ private:
+  Config* m_config;
+};
+}  // namespace SimpleServer

@@ -1,23 +1,17 @@
 #pragma once
 #include "server_base.h"
 
-namespace CHServer {
-	class DBServer : public ServerBase {
+namespace SimpleServer {
+class DBServer : public ServerBase {
+ public:
+  virtual bool BeforeInitilize() override;
 
-	public:
-		virtual bool BeforeInitilize() override;
+  virtual bool AfterInitilize() override;
 
+  virtual void BeforeFinalize() override;
 
-		virtual bool AfterInitilize() override;
+  virtual void AfterFinalize() override;
 
-
-		virtual void BeforeFinalize() override;
-
-
-		virtual void AfterFinalize() override;
-
-
-		virtual Session* CreateSession(SocketBase* socket) override;
-
-	};
-}
+  virtual Session* CreateSession(SocketBase* socket) override;
+};
+}  // namespace SimpleServer

@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package CHServer;
+package SimpleServer;
 
 enum PRIAVTE_SERVER_COMMAND {
 	UNKNOW = 0;

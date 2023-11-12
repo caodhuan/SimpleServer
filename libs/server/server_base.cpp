@@ -5,7 +5,7 @@
 #include "resource _manager.h"
 #include "session.h"
 
-namespace CHServer {
+namespace SimpleServer {
 template <>
 ServerBase* SingletonInheritable<ServerBase>::m_Instance = 0;
 
@@ -64,4 +64,4 @@ void ServerBase::Finalize() {
 
 void ServerBase::Run() { m_io_context.run(); }
 
-}  // namespace CHServer
+}  // namespace SimpleServer

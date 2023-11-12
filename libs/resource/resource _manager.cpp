@@ -4,7 +4,7 @@
 #include "config.h"
 #include "log.h"
 
-namespace CHServer {
+namespace SimpleServer {
 
 ResourceManager::ResourceManager() : m_config(nullptr) {}
 
@@ -28,4 +28,4 @@ bool ResourceManager::Initialize(const char* path, const char* tableName) {
 
 void ResourceManager::Finalize() {}
 
-}  // namespace CHServer
+}  // namespace SimpleServer

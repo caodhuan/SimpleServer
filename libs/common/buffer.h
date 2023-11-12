@@ -1,51 +1,52 @@
 #pragma once
 
-#include <vector>
 #include <stdint.h>
 
-namespace CHServer {
-	
-	// 非线程安全
-	class Buffer {
-	public:
-		Buffer();
+#include <vector>
 
-		~Buffer();
+namespace SimpleServer {
 
-	public:
-		// 有效数据大小
-		int32_t GetDataLength();
+// 非线程安全
+class Buffer {
+ public:
+  Buffer();
 
-		// 可用空间
-		int32_t GetFreeLength();
+  ~Buffer();
 
-		// 整个buffer大小
-		int32_t GetAllLength();
+ public:
+  // 有效数据大小
+  int32_t GetDataLength();
 
-		// 调整大小。只增不减
-		// len 要增加的字节数
-		void AdjustLength(int32_t len);
+  // 可用空间
+  int32_t GetFreeLength();
 
-		// 可用空间头
-		char* GetFreePoint();
+  // 整个buffer大小
+  int32_t GetAllLength();
 
-		// 获取数据头
-		char* GetDataPoint();
-		
-		int32_t GetContinuesDatalength();
+  // 调整大小。只增不减
+  // len 要增加的字节数
+  void AdjustLength(int32_t len);
 
-		// 释放数据
-		void FreeData(int32_t len);
+  // 可用空间头
+  char* GetFreePoint();
 
-		// 通过头指针， 填充了多少数据
-		// 不可以超过GetFreeLength的大小！
-		void FillData(int32_t len);
+  // 获取数据头
+  char* GetDataPoint();
 
-	private:
-		std::vector<char> m_data;
+  int32_t GetContinuesDatalength();
 
-		int32_t m_head;
+  // 释放数据
+  void FreeData(int32_t len);
 
-		int32_t m_tail;
-	};
-}
+  // 通过头指针， 填充了多少数据
+  // 不可以超过GetFreeLength的大小！
+  void FillData(int32_t len);
+
+ private:
+  std::vector<char> m_data;
+
+  int32_t m_head;
+
+  int32_t m_tail;
+};
+}  // namespace SimpleServer

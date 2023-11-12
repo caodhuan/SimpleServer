@@ -6,7 +6,7 @@
 #include "timer.h"
 #include "timer_factory.h"
 
-namespace CHServer {
+namespace SimpleServer {
 
 static MyServer server;
 
@@ -33,4 +33,4 @@ void MyServer::AddSession(Session* session) { m_sessions.insert(session); }
 
 void MyServer::RemoveSession(Session* session) { m_sessions.erase(session); }
 
-}  // namespace CHServer
+}  // namespace SimpleServer

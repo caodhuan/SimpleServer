@@ -8,3 +8,4 @@ libs/protos/protoc
 libs/protos/libprotobuf.a
 proj_build
 src/test/test/*
+build/*

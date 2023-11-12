@@ -6,7 +6,7 @@
 
 #include "log.h"
 
-namespace CHServer {
+namespace SimpleServer {
 Buffer::Buffer() : m_head(0), m_tail(0) { m_data.resize(256); }
 
 Buffer::~Buffer() {}
@@ -138,4 +138,4 @@ void Buffer::FillData(int32_t len) {
   }
 }
 
-}  // namespace CHServer
+}  // namespace SimpleServer

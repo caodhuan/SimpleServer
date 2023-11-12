@@ -4,7 +4,7 @@
 #include "socket_base.h"
 #include "ss/private_server_command.pb.h"
 
-namespace CHServer {
+namespace SimpleServer {
 
 ServerSession::ServerSession(SocketBase* socket) : Session(socket) {
   RegisterProcedure(REGISTER_SERVER,
@@ -61,4 +61,4 @@ bool ServerSession::OnQueryServerInfo(const char* data, uint16_t len) {
   return true;
 }
 
-}  // namespace CHServer
+}  // namespace SimpleServer

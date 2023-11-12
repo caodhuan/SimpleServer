@@ -52,7 +52,7 @@ target_link_libraries(db ${mysqlclient_lib})
 # 	COMMAND protoc ${PROTO} -I=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/ --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/libs/protos/
 # )
 
-find_package(Boost 1.74.0 REQUIRED) 
+find_package(Boost 1.82.0 REQUIRED) 
 if(Boost_FOUND)
 	message("boost include and lib dirs: " ${Boost_INCLUDE_DIR} ", ")
 	include_directories(${Boost_INCLUDE_DIR})
