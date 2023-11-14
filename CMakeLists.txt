@@ -18,8 +18,6 @@ group(test)
 
 	# addexec(server_test ${CMAKE_CURRENT_SOURCE_DIR}/src/test/server_test)
 
-	# addexec(redis_test ${CMAKE_CURRENT_SOURCE_DIR}/src/test/redis_test)
-
 	addexec(test ${CMAKE_CURRENT_SOURCE_DIR}/src/test/test)
 endgroup()
 
@@ -27,7 +25,6 @@ endgroup()
 
 # target_link_libraries(server_test server) 
 
-# target_link_libraries(redis_test network db protos) 
 target_link_libraries(test common)
 
 # if(UNIX)
