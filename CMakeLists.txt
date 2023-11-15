@@ -11,7 +11,7 @@ endif()
 include(macros)
 include(3rd)
 include(libs)
-#include(servers)
+include(servers)
 
 group(test)
 	# addexec(client_test ${CMAKE_CURRENT_SOURCE_DIR}/src/test/client_test)
